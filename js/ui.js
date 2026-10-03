@@ -72,6 +72,25 @@ export function renderTopbar({ name, ageText }) {
   $('clock').textContent = `${hh}:${mm}`;
 }
 
+// ペットのスプライト。変わったときだけ src を差し替える
+export function renderPet(file) {
+  const pet = $('pet');
+  const src = assetPath(file);
+  if (pet.getAttribute('src') !== src) pet.setAttribute('src', src);
+}
+
+// 背景: 'day' | 'night' | 'park'(画像の指定は CSS 側のクラスで行う)
+export function renderBackground(kind) {
+  const stage = $('stage');
+  stage.classList.toggle('bg-night', kind === 'night');
+  stage.classList.toggle('bg-park', kind === 'park');
+}
+
+// alert アイコンの点滅(§4.8)
+export function renderAlert(on) {
+  $('alert-icon').classList.toggle('blink', on);
+}
+
 // トースト表示(alert() の代わり)
 let toastTimer = null;
 export function showToast(text, ms = 1800) {
