@@ -108,6 +108,7 @@ function bath(game) {
     add(game.state, 'cleanliness', 100);
     add(game.state, 'happiness', 2);
     game.render();
+    game.save();
   }, BATH_MS);
 }
 
@@ -143,7 +144,7 @@ function sleep(game) {
 }
 
 const HANDLERS = {
-  meal: (game) => openMealMenu(game, FOODS, (food) => { eat(game, food); game.render(); }),
+  meal: (game) => openMealMenu(game, FOODS, (food) => { eat(game, food); game.render(); game.save(); }),
   snack, play, bath, toilet, medicine, sleep,
   status: (game) => openStatus(game)
 };
@@ -165,4 +166,5 @@ export function handleAction(game, key) {
   }
   HANDLERS[key](game);
   game.render();
+  game.save(); // 各アクション後にセーブ(§6)
 }

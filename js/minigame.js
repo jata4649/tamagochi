@@ -97,6 +97,7 @@ function runGame(game) {
       addHappy(game.state, MISS_HAPPY);
     }
     game.render();
+    game.save();
     setTimeout(round < ROUNDS ? nextRound : finish, RESULT_MS);
   };
 
@@ -118,6 +119,7 @@ function runGame(game) {
     btns.append(again, backButton(() => endMiniGame(game)));
     panel.appendChild(btns);
     game.render();
+    game.save();
   };
 
   nextRound();
