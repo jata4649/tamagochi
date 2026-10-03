@@ -1,0 +1,197 @@
+/* ===== 変数(色・サイズはここに集める) ===== */
+:root {
+  --bg-page: #fbeee0;
+  --card-bg: #fff8ef;
+  --card-border: #5a3d2b;
+  --text: #4a3426;
+  --text-sub: #8a6a55;
+  --bar-bg: #ffe9c9;
+  --gauge-track: #ead7c0;
+  --gauge-good: #6cc56c;
+  --gauge-mid: #f2c641;
+  --gauge-bad: #e5574f;
+  --btn-bg: #fff3df;
+  --btn-bg-active: #ffd9a8;
+  --btn-border: #c99a6e;
+  --toast-bg: rgba(74, 52, 38, 0.92);
+  --toast-text: #fff8ef;
+  --card-max: 480px;
+  --radius: 16px;
+  --font: "Hiragino Maru Gothic ProN", "Hiragino Sans", "Noto Sans JP", "Meiryo", system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg-page);
+  color: var(--text);
+  font-family: var(--font);
+  -webkit-text-size-adjust: 100%;
+}
+
+/* 画像は全て等比のみ + ドット絵をくっきり表示(仕様書 §2.2 ルール3・4) */
+.sprite {
+  image-rendering: pixelated;
+  -webkit-user-drag: none;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* ===== カード(PC では中央の最大 480px) ===== */
+.card {
+  position: relative;
+  width: 100%;
+  max-width: var(--card-max);
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  background: var(--card-bg);
+  overflow: hidden;
+}
+@media (min-width: 520px) {
+  .card {
+    min-height: auto;
+    margin: 24px auto;
+    border: 3px solid var(--card-border);
+    border-radius: var(--radius);
+    box-shadow: 0 6px 0 var(--card-border);
+  }
+}
+
+/* ===== 上部バー ===== */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--bar-bg);
+  border-bottom: 3px solid var(--card-border);
+}
+.alert-icon {
+  height: 36px; /* 高さのみ指定 → 幅は等比 */
+  flex: none;
+}
+.topbar-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+  min-width: 0;
+}
+.pet-name { font-weight: bold; font-size: 16px; }
+.pet-age { font-size: 12px; color: var(--text-sub); }
+.clock { font-size: 14px; font-variant-numeric: tabular-nums; }
+
+/* ===== ステージ ===== */
+.stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1330 / 1182; /* 背景画像の実寸比。cover なので多少ずれても歪まない */
+  background-image: url("../assets/bg/bg_day_room.png");
+  background-size: cover;      /* 引き伸ばし禁止(§2.2 ルール5) */
+  background-position: center;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  overflow: hidden;
+}
+/* ペット: 足元(画像下端から 24/512)を床のラインに合わせる */
+.pet {
+  position: absolute;
+  left: 50%;
+  bottom: 12%;
+  height: 58%;           /* 高さのみ指定 → 幅は等比 */
+  transform: translateX(-50%);
+  z-index: 2;
+}
+.fx-layer, .poop-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.fx-layer { z-index: 3; }
+.poop-layer { z-index: 1; }
+
+/* ===== ゲージ ===== */
+.gauges {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 14px;
+  padding: 10px 14px;
+  border-top: 3px solid var(--card-border);
+  border-bottom: 3px solid var(--card-border);
+  background: var(--bar-bg);
+}
+.gauge { display: flex; align-items: center; gap: 6px; font-size: 13px; }
+.gauge-label { width: 4.2em; flex: none; }
+.gauge-track {
+  flex: 1;
+  height: 12px;
+  background: var(--gauge-track);
+  border: 2px solid var(--card-border);
+  border-radius: 4px;
+  overflow: hidden;
+  image-rendering: pixelated;
+}
+.gauge-fill {
+  height: 100%;
+  width: 80%;
+  background: var(--gauge-good);
+  transition: width 0.4s steps(8), background-color 0.4s;
+}
+.gauge-fill.mid { background: var(--gauge-mid); }
+.gauge-fill.bad { background: var(--gauge-bad); }
+
+/* ===== アクションボタン 2行×4列 ===== */
+.actions {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding: 12px;
+}
+.action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 2px;
+  font: inherit;
+  font-size: 12px;
+  color: var(--text);
+  background: var(--btn-bg);
+  border: 2px solid var(--btn-border);
+  border-radius: 10px;
+  box-shadow: 0 3px 0 var(--btn-border);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.action-btn:active {
+  transform: translateY(3px);
+  box-shadow: none;
+  background: var(--btn-bg-active);
+}
+.action-btn:disabled { opacity: 0.45; cursor: default; }
+.action-btn img { height: 48px; } /* 高さのみ指定(素材 README 推奨 48〜96px) */
+
+/* ===== トースト ===== */
+.toast {
+  position: absolute;
+  left: 50%;
+  top: 64px;
+  transform: translate(-50%, -10px);
+  max-width: 90%;
+  padding: 8px 14px;
+  border-radius: 12px;
+  background: var(--toast-bg);
+  color: var(--toast-text);
+  font-size: 14px;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s;
+  z-index: 50;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
