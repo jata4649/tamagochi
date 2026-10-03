@@ -43,13 +43,13 @@ export function fadeOutPoops() {
 }
 
 // ランダム位置に演出を count 個出す(遊び正解・進化など)
-export function spawnRandom(files, className, count) {
+export function spawnRandom(files, className, count, delayStep = 0.15) {
   for (let i = 0; i < count; i++) {
     const file = files[Math.floor(Math.random() * files.length)];
     const left = 15 + Math.random() * 70;
     const top = 10 + Math.random() * 50;
     const el = spawnFx(file, className, { left: left + '%', top: top + '%' });
-    el.style.animationDelay = (i * 0.15) + 's';
+    el.style.animationDelay = (i * delayStep) + 's';
   }
 }
 

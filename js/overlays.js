@@ -23,6 +23,7 @@ export function spriteImg(file, className = '') {
 export function openOverlay(game, name, content) {
   const box = $('overlay');
   box.textContent = '';
+  box.classList.remove('screen');
   const panel = el('div', 'overlay-panel');
   panel.appendChild(content);
   box.appendChild(panel);

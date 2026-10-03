@@ -1,5 +1,5 @@
 // 初期化・ゲームループの入口
-// M2: 8ボタンのアクション(食事選択・ミニゲーム・ステータス含む)
+// M3: タイトル → たまご → 孵化(名前入力)→ 進化 → お別れ → リセット
 import { UI } from './strings.js';
 import { loadManifest, checkFiles, ACTION_ICONS, BG } from './assets.js';
 import {
@@ -7,12 +7,17 @@ import {
 } from './state.js';
 import {
   applyStaticText, buildGauges, renderGauges, buildActions, renderTopbar,
-  renderPet, renderBackground, renderAlert, renderActionState
+  renderPet, renderBackground, renderAlert, renderActionState, showToast
 } from './ui.js';
-import { renderPoops, setSleepFx, setSickBadge } from './effects.js';
+import { renderPoops, setSleepFx, setSickBadge, spawnRandom } from './effects.js';
 import { handleAction, isBusy, FOODS } from './actions.js';
+import { closeOverlay } from './overlays.js';
+import { endMiniGame } from './minigame.js';
+import { openTitle, updateTitle, openNameInput, openGone, closeScreen } from './screens.js';
+import { TIME_SCALE, setTimeScale } from './lifecycle.js';
 
 const TICK_MS = 1000;
+const SCREENS = ['title', 'name', 'gone'];
 
 // 実行時の状態(セーブ対象外のものは runtime に置く)
 const game = {
@@ -24,6 +29,7 @@ const game = {
 // 画面全体を state から描き直す
 function render() {
   const s = game.state;
+  if (!s) return;
   const rt = game.runtime;
   const anim = Date.now() < rt.animUntil ? rt.anim : null;
   const sprite = selectSprite(s, anim);
@@ -32,8 +38,8 @@ function render() {
   renderGauges(s.gauges);
   renderAlert(needsCare(s));
   renderPoops(s.flags.poops);
-  setSleepFx(s.flags.sleeping);
-  setSickBadge(s.flags.sick && sprite.fallback);
+  setSleepFx(s.flags.sleeping && !s.flags.gone);
+  setSickBadge(s.flags.sick && sprite.fallback && !s.flags.gone);
   renderActionState({ busy: isBusy(game), sleeping: s.flags.sleeping });
   // 遊び中は公園、睡眠中は夜固定、それ以外は時刻で昼/夜(§5.2・§4.5)
   renderBackground(rt.park ? 'park' : (s.flags.sleeping || isNight()) ? 'night' : 'day');
@@ -42,9 +48,64 @@ function render() {
   renderTopbar({ name: s.name || UI.defaultName, ageText: UI.ageFormat(a.d, a.h, a.m) });
 }
 
+// 状態に合った全画面(タイトル・名前入力・お別れ)を出す
+function syncScreen() {
+  const s = game.state;
+  const cur = game.runtime.overlay;
+  let want = null;
+  if (!s || s.stage === 'egg') want = 'title';
+  else if (s.flags.gone) want = 'gone';
+  else if (!s.name) want = 'name';
+
+  if (want === cur) {
+    if (want === 'title') updateTitle(game);
+    return;
+  }
+  if (!want) {
+    if (SCREENS.includes(cur)) closeScreen(game);
+    return;
+  }
+  // 開いている他の画面を閉じてから切り替える
+  if (cur === 'play') endMiniGame(game);
+  else if (cur) closeOverlay(game);
+  if (want === 'title') openTitle(game, startNew);
+  if (want === 'gone') openGone(game, resetGame);
+  if (want === 'name') {
+    openNameInput(game, (name) => {
+      game.state.name = name;
+      closeScreen(game);
+    });
+  }
+}
+
+// 進化などのイベントに演出を付ける(§4.1・§5.4)
+function handleEvents(events) {
+  for (const ev of events) {
+    if (ev.type === 'evolve') {
+      spawnRandom(['props/prop_star.png'], 'fx-evolve', 5, 0.3);
+      showToast(UI.evolveMsg[ev.to], 2500);
+    }
+  }
+}
+
+function startNew(colorway) {
+  game.state = createState(colorway, '', Date.now());
+  syncScreen();
+}
+
+// 「あたらしいたまご」: データを消してタイトルへ(セーブ削除は M4)
+function resetGame() {
+  game.state = null;
+  closeScreen(game);
+  syncScreen();
+}
+
 function loop() {
-  advance(game.state, Date.now());
-  render();
+  if (game.state) {
+    handleEvents(advance(game.state, Date.now()));
+    render();
+  }
+  syncScreen();
 }
 
 async function init() {
@@ -54,20 +115,17 @@ async function init() {
     ...Object.values(ACTION_ICONS), ...Object.values(BG), ...FOODS.map((f) => f.file),
     'icons/icon_alert.png', 'props/prop_poop.png', 'props/prop_zzz.png',
     'props/prop_heart.png', 'props/prop_star.png', 'props/prop_note.png',
-    'props/prop_sparkle.png', 'props/prop_ball.png'
+    'props/prop_sparkle.png', 'props/prop_ball.png',
+    'sprites/pet_egg.png', 'sprites/pet_a_adult_angel.png'
   ]);
 
   applyStaticText();
   buildGauges();
   buildActions((key) => handleAction(game, key));
 
-  // タイトル画面は M3 で作るため、いまは A のおとなから開始する
-  const now = Date.now();
-  game.state = createState('a', '', now);
-  game.state.stage = 'adult';
-  game.state.hatchedAt = now;
-
-  // DevTools から触れるように公開(例: tt.state.gauges.hunger = 10)
+  // DevTools から触れるように公開(例: tt.state.stageEnteredAt -= 3 * 3600e3)
+  game.setTimeScale = setTimeScale;
+  game.TIME_SCALE = TIME_SCALE;
   window.tt = game;
 
   loop();

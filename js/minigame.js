@@ -46,7 +46,7 @@ export function startMiniGame(game) {
   game.render();
 }
 
-function endMiniGame(game) {
+export function endMiniGame(game) {
   const b = $('mg-ball');
   if (b) b.remove();
   showPanel(false);

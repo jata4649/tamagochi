@@ -1,10 +1,7 @@
 // セーブデータの形・ゲージ更新・状態判定(仕様書 §4.2〜§4.4・§4.6・§6)
+import { checkEvolution, checkGone } from './lifecycle.js';
 
 export const SAVE_VERSION = 1;
-
-// 進化スピード(§4.1)。DEMO = 1 / REALISTIC = 0.1。初期値は DEMO
-export const TIME_SCALE = { DEMO: 1, REALISTIC: 0.1 };
-export let timeScale = TIME_SCALE.DEMO;
 
 const HOUR = 60 * 60 * 1000;
 const MINUTE = 60 * 1000;
@@ -49,18 +46,30 @@ export function createState(colorway = 'a', name = '', now = Date.now()) {
 }
 
 // 経過時間ぶん状態を進める(オフライン分もこれで一括計算する)
+// 戻り値: この間に起きたイベント([{ type: 'evolve', to } | { type: 'gone' }])
 export function advance(state, now = Date.now()) {
-  if (state.stage === 'egg' || state.flags.gone) {
-    state.lastTick = now;
-    return;
-  }
+  const events = [];
   let t = Math.max(state.lastTick, now - MAX_OFFLINE_MS);
-  while (t < now) {
+  // 24時間を超えた分は「時間が止まっていた」扱いにし、時刻の記録もその分ずらす
+  if (t > state.lastTick && !state.flags.gone) shiftTimes(state, t - state.lastTick);
+  while (t < now && !state.flags.gone) {
     const dt = Math.min(STEP_MS, now - t);
     t += dt;
-    step(state, dt, t);
+    if (state.stage !== 'egg') step(state, dt, t);
+    checkEvolution(state, t, events);
+    if (state.stage !== 'egg') checkGone(state, t, events);
   }
   state.lastTick = now;
+  return events;
+}
+
+// ゲーム内の時刻記録を delta ミリ秒うしろへずらす(年齢 hatchedAt は実時間なのでずらさない)
+function shiftTimes(state, delta) {
+  const f = state.flags;
+  state.stageEnteredAt += delta;
+  for (const key of ['zeroHungerSince', 'zeroHappySince', 'pendingPoopAt']) {
+    if (f[key] !== null) f[key] += delta;
+  }
 }
 
 // 1刻みぶんの更新。dt はミリ秒、t は刻み終わりの時刻

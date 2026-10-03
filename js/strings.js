@@ -58,5 +58,13 @@ export const UI = {
   yes: "はい",
   no: "いいえ",
   countFormat: (n) => `${n}こ`,
-  hitsFormat: (n) => `${n}かい あたり`
+  hitsFormat: (n) => `${n}かい あたり`,
+
+  // タイトル・孵化・進化(§4.1・§5.3)
+  colorPick: "いろを えらんでね",
+  hatchCountdown: (min) => `あと${min}分でうまれるよ`,
+  hatchSoon: "もうすぐ うまれるよ",
+  evolveMsg: { baby: "たまごが かえた!", child: "こどもに なった!", adult: "大人になった!" },
+  nameTitle: "なまえを つけてね",
+  okBtn: "けってい"
 };
