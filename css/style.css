@@ -15,6 +15,7 @@
   --btn-border: #c99a6e;
   --toast-bg: rgba(74, 52, 38, 0.92);
   --toast-text: #fff8ef;
+  --overlay-bg: rgba(74, 52, 38, 0.55);
   --card-max: 480px;
   --radius: 16px;
   --font: "Hiragino Maru Gothic ProN", "Hiragino Sans", "Noto Sans JP", "Meiryo", system-ui, sans-serif;
@@ -246,4 +247,174 @@ html, body {
 @keyframes wobble {
   0%, 100% { transform: rotate(-12deg); }
   50%      { transform: rotate(12deg); }
+}
+
+/* ===== M2: ボタンの状態 ===== */
+.action-btn.locked { opacity: 0.45; }
+[hidden] { display: none !important; }
+
+/* 丸ボタン(もどる・みぎ/ひだり など) */
+.pill-btn {
+  display: block;
+  margin: 12px auto 0;
+  min-width: 120px;
+  padding: 10px 18px;
+  font: inherit;
+  font-size: 15px;
+  color: var(--text);
+  background: var(--btn-bg);
+  border: 2px solid var(--btn-border);
+  border-radius: 999px;
+  box-shadow: 0 3px 0 var(--btn-border);
+  cursor: pointer;
+}
+.pill-btn:active { transform: translateY(3px); box-shadow: none; }
+.pill-btn:disabled { opacity: 0.45; cursor: default; }
+
+/* ===== オーバーレイ ===== */
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  background: var(--overlay-bg);
+  z-index: 40;
+}
+.overlay.show { display: flex; }
+.overlay-panel {
+  width: 100%;
+  max-height: 100%;
+  overflow-y: auto;
+  padding: 14px;
+  background: var(--card-bg);
+  border: 3px solid var(--card-border);
+  border-radius: var(--radius);
+}
+.overlay-title { margin: 0 0 10px; font-size: 18px; text-align: center; }
+
+/* 食事選択: 3列×4行 */
+.meal-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.food-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4px 2px 6px;
+  font: inherit;
+  color: var(--text);
+  background: var(--btn-bg);
+  border: 2px solid var(--btn-border);
+  border-radius: 10px;
+  cursor: pointer;
+}
+.food-btn:active { background: var(--btn-bg-active); }
+.food-btn img { height: 52px; } /* 高さのみ指定 */
+.food-name { font-size: 12px; font-weight: bold; }
+.food-effect { font-size: 10px; color: var(--text-sub); }
+
+/* ステータス */
+.status-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  border-bottom: 1px dashed var(--gauge-track);
+  font-size: 14px;
+}
+.status-label { min-width: 5em; flex: none; white-space: nowrap; color: var(--text-sub); }
+.status-row .gauge-track { flex: 1; }
+.status-value { flex: 1; text-align: right; }
+.status-num { width: 2.2em; text-align: right; font-variant-numeric: tabular-nums; }
+.status-note { margin: 10px 0 0; font-size: 12px; color: var(--text-sub); text-align: center; }
+
+/* ===== ミニゲーム ===== */
+.minigame {
+  padding: 16px 12px 20px;
+  text-align: center;
+  border-top: 3px solid var(--card-border);
+  background: var(--bar-bg);
+}
+.mg-round { margin: 0; font-size: 12px; color: var(--text-sub); }
+.mg-text { margin: 6px 0; font-size: 18px; font-weight: bold; }
+.mg-note { margin: 0; font-size: 12px; color: var(--text-sub); }
+.mg-choices { display: flex; justify-content: center; gap: 12px; }
+.mg-choices .pill-btn { margin: 8px 0 0; }
+
+.mg-ball {
+  position: absolute;
+  left: 50%;
+  top: 8%;
+  height: 14%;
+  transform: translateX(-50%);
+}
+.mg-ball.shuffle { animation: ball-shuffle 0.3s ease-in-out infinite alternate; }
+.mg-ball.fly-left  { animation: ball-fly-left 0.6s ease-out forwards; }
+.mg-ball.fly-right { animation: ball-fly-right 0.6s ease-out forwards; }
+.mg-ball.hidden { display: none; }
+@keyframes ball-shuffle {
+  from { transform: translateX(-250%); }
+  to   { transform: translateX(150%); }
+}
+@keyframes ball-fly-left {
+  to { transform: translate(-400%, -60%) rotate(-360deg); }
+}
+@keyframes ball-fly-right {
+  to { transform: translate(300%, -60%) rotate(360deg); }
+}
+
+/* ===== 一回きりの演出(animationend で削除される) ===== */
+.fx { animation-fill-mode: both; }
+
+/* ハート: 右上から浮上してフェードアウト(2秒) */
+.fx-heart { height: 14%; animation: float-fade 2s ease-out both; }
+/* 食べ物: 口元に表示(2.5秒) */
+.fx-food {
+  left: 50%;
+  top: 56%;
+  height: 16%;
+  transform: translateX(-50%);
+  animation: food-bite 2.5s steps(5) both;
+}
+/* おふろアイコン: 浮上(3秒) */
+.fx-bath { height: 20%; animation: float-fade-center 3s ease-out both; }
+/* くすりアイコン: 浮上(2秒) */
+.fx-float { height: 16%; animation: float-fade-center 2s ease-out both; }
+/* キラキラ(おふろ用・3秒) */
+.fx-sparkle-slow { height: 14%; animation: twinkle 3s ease-in-out both; }
+/* 遊び正解: ランダム位置に出て 1.2 秒でフェード */
+.fx-pop { height: 14%; animation: pop-fade 1.2s ease-out both; }
+
+@keyframes float-fade {
+  0%   { opacity: 0; transform: translateY(0) scale(0.6); }
+  15%  { opacity: 1; transform: translateY(-10%) scale(1); }
+  100% { opacity: 0; transform: translateY(-120%) scale(1); }
+}
+@keyframes float-fade-center {
+  0%   { opacity: 0; transform: translate(-50%, 20%); }
+  20%  { opacity: 1; transform: translate(-50%, 0); }
+  100% { opacity: 0; transform: translate(-50%, -80%); }
+}
+@keyframes food-bite {
+  0%   { opacity: 1; clip-path: inset(0 0 0 0); }
+  100% { opacity: 0.2; clip-path: inset(0 0 0 70%); }
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0; transform: scale(0.5); }
+  30%, 70% { opacity: 1; transform: scale(1); }
+}
+@keyframes pop-fade {
+  0%   { opacity: 0; transform: translate(-50%, 0) scale(0.4); }
+  25%  { opacity: 1; transform: translate(-50%, -20%) scale(1.1); }
+  100% { opacity: 0; transform: translate(-50%, -60%) scale(1); }
+}
+
+/* うんちのフェードアウト(トイレ) */
+.poop.fading { animation: poop-out 0.8s ease-in forwards; }
+@keyframes poop-out {
+  to { opacity: 0; transform: translateY(20%) scale(0.6); }
 }

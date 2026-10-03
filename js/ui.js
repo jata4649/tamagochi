@@ -86,6 +86,14 @@ export function renderBackground(kind) {
   stage.classList.toggle('bg-park', kind === 'park');
 }
 
+// ボタンの状態: busy=演出中などで全部押せない / sleeping=おやすみ以外を薄く表示
+export function renderActionState({ busy, sleeping }) {
+  for (const btn of $('actions').children) {
+    btn.disabled = busy;
+    btn.classList.toggle('locked', sleeping && btn.dataset.action !== 'sleep');
+  }
+}
+
 // alert アイコンの点滅(§4.8)
 export function renderAlert(on) {
   $('alert-icon').classList.toggle('blink', on);

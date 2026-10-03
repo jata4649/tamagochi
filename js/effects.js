@@ -23,12 +23,33 @@ export function spawnFx(file, className, pos = {}) {
 }
 
 // 床のうんち(最大2個)。数が変わったときだけ DOM を作り直す
+// (フェードアウト中のものは数えない)
 export function renderPoops(count) {
   const layer = $('poop-layer');
-  if (layer.childElementCount === count) return;
-  layer.textContent = '';
+  const live = [...layer.querySelectorAll('.poop:not(.fading)')];
+  if (live.length === count) return;
+  live.forEach((el) => el.remove());
   for (let i = 0; i < count; i++) {
     layer.appendChild(makeImg('props/prop_poop.png', `poop poop-${i}`));
+  }
+}
+
+// トイレ: うんちをフェードで消す
+export function fadeOutPoops() {
+  for (const el of $('poop-layer').querySelectorAll('.poop:not(.fading)')) {
+    el.classList.add('fading');
+    el.addEventListener('animationend', () => el.remove(), { once: true });
+  }
+}
+
+// ランダム位置に演出を count 個出す(遊び正解・進化など)
+export function spawnRandom(files, className, count) {
+  for (let i = 0; i < count; i++) {
+    const file = files[Math.floor(Math.random() * files.length)];
+    const left = 15 + Math.random() * 70;
+    const top = 10 + Math.random() * 50;
+    const el = spawnFx(file, className, { left: left + '%', top: top + '%' });
+    el.style.animationDelay = (i * 0.15) + 's';
   }
 }
 

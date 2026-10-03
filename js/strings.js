@@ -27,5 +27,36 @@ export const UI = {
   // --- 以下は仕様書に無いため追加した文言(README「仕様メモ」参照) ---
   defaultName: "ふれんどくん",
   // 年齢表示「○日○時間○分」の書式
-  ageFormat: (d, h, m) => `${d}日${h}時間${m}分`
+  ageFormat: (d, h, m) => `${d}日${h}時間${m}分`,
+
+  // 食事選択(§5.3)。食材名は manifest.json の ja をもとにした
+  mealTitle: "なにを たべる?",
+  foods: {
+    onigiri: "おにぎり", bread: "パン", burger: "ハンバーガー", cake: "ケーキ",
+    apple: "りんご", chips: "ポテトチップス", ricebowl: "ごはん茶碗", banana: "バナナ",
+    icecream: "アイスクリーム", cookie: "クッキー", water: "水", juice: "ジュース"
+  },
+  effectFormat: (label, v) => `${label} +${v}`,
+
+  // ミニゲーム(§4.7)
+  playAsk: "ボールは どっちに とぶ?",
+  playLeft: "ひだり",
+  playRight: "みぎ",
+  playHit: "あたり!",
+  playMiss: "はずれ…",
+  playRound: (n, total) => `${n} / ${total}`,
+  playResult: (n, total) => `${total}かい中 ${n}かい あたり!`,
+  playAgain: "もう1回",
+  playMaxHappy: "きげん まんたん!",
+
+  // ステータス画面(§5.3)
+  nameLabel: "なまえ",
+  sickLabel: "びょうき",
+  sleepLabel: "すいみん",
+  poopLabel: "うんち",
+  miniGameLabel: "ミニゲーム さいこう",
+  yes: "はい",
+  no: "いいえ",
+  countFormat: (n) => `${n}こ`,
+  hitsFormat: (n) => `${n}かい あたり`
 };
