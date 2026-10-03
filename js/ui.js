@@ -12,6 +12,7 @@ export function applyStaticText() {
   document.title = UI.appTitle;
   $('age-label').textContent = UI.ageLabel;
   $('alert-icon').alt = UI.alertText;
+  $('settings-btn').setAttribute('aria-label', UI.settingsTitle);
 }
 
 // ゲージ4本の DOM を生成
@@ -73,10 +74,12 @@ export function renderTopbar({ name, ageText }) {
 }
 
 // ペットのスプライト。変わったときだけ src を差し替える
-export function renderPet(file) {
+// filter は B/C で A の絵を流用するときの hue-rotate(M5)
+export function renderPet(file, filter = '') {
   const pet = $('pet');
   const src = assetPath(file);
   if (pet.getAttribute('src') !== src) pet.setAttribute('src', src);
+  if (pet.style.filter !== filter) pet.style.filter = filter;
 }
 
 // 背景: 'day' | 'night' | 'park'(画像の指定は CSS 側のクラスで行う)

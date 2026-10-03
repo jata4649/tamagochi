@@ -66,5 +66,16 @@ export const UI = {
   hatchSoon: "もうすぐ うまれるよ",
   evolveMsg: { baby: "たまごが かえた!", child: "こどもに なった!", adult: "大人になった!" },
   nameTitle: "なまえを つけてね",
-  okBtn: "けってい"
+  okBtn: "けってい",
+
+  // せってい(M5)
+  settingsTitle: "せってい",
+  settingHue: "みどり・ピンクの ひょうじょう",
+  settingHueNote: "オンにすると きいろの絵の いろを かえて ひょうじょうを だすよ",
+  settingSound: "おと",
+  settingSpeed: "そだつ はやさ",
+  speedDemo: "はやい",
+  speedReal: "ふつう",
+  on: "オン",
+  off: "オフ"
 };

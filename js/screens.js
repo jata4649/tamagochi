@@ -81,11 +81,13 @@ export function openNameInput(game, onDone) {
 }
 
 // [お別れ] angel を中央に大きく・年齢・文言・「あたらしいたまご」
-export function openGone(game, onReset) {
+export function openGone(game, onReset, filter = '') {
   const a = ageParts(game.state);
   const root = el('div', 'gone-screen');
   root.appendChild(el('h2', 'overlay-title', UI.goneTitle));
-  root.appendChild(spriteImg('sprites/pet_a_adult_angel.png', 'gone-angel'));
+  const angel = spriteImg('sprites/pet_a_adult_angel.png', 'gone-angel');
+  angel.style.filter = filter; // B/C は色を合わせる(せってい次第)
+  root.appendChild(angel);
   root.appendChild(el('p', 'gone-name', game.state.name || UI.defaultName));
   root.appendChild(el('p', 'gone-age', `${UI.ageLabel} ${UI.ageFormat(a.d, a.h, a.m)}`));
   root.appendChild(el('p', 'gone-body', UI.goneBody));

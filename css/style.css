@@ -501,3 +501,31 @@ html, body {
 
 /* 進化の星: ランダム位置に 1.5 秒ずつ */
 .fx-evolve { height: 14%; animation: pop-fade 1.5s ease-out both; }
+
+/* ===== M5: せってい ===== */
+.settings-btn {
+  flex: none;
+  padding: 2px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.settings-btn img { height: 30px; } /* 高さのみ指定 */
+.setting-row { flex-wrap: wrap; }
+.setting-choices { display: flex; gap: 6px; margin-left: auto; }
+.setting-btn {
+  min-width: 64px;
+  padding: 6px 10px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--text);
+  background: var(--btn-bg);
+  border: 2px solid var(--btn-border);
+  border-radius: 999px;
+  cursor: pointer;
+}
+.setting-btn.selected {
+  background: var(--btn-bg-active);
+  border-color: var(--card-border);
+  font-weight: bold;
+}

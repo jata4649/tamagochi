@@ -1,6 +1,7 @@
 // 初期化・ゲームループの入口
 // タイトル → たまご → 孵化(名前入力)→ 進化 → お別れ → リセット
-// M4: localStorage セーブ・リロード復帰・オフライン補正
+// localStorage セーブ・リロード復帰・オフライン補正
+// M5: せってい(B/C の表情流用・効果音・育つはやさ)
 import { UI } from './strings.js';
 import { loadManifest, checkFiles, ACTION_ICONS, BG } from './assets.js';
 import {
@@ -17,6 +18,8 @@ import { endMiniGame } from './minigame.js';
 import { openTitle, updateTitle, openNameInput, openGone, closeScreen } from './screens.js';
 import { TIME_SCALE, setTimeScale } from './lifecycle.js';
 import { saveState, loadState, clearSave, SAVE_KEY } from './save.js';
+import { settings, loadSettings, openSettings } from './settings.js';
+import { beep } from './sound.js';
 
 const TICK_MS = 1000;
 const SAVE_EVERY_MS = 60 * 1000; // ゲージ更新のセーブ間隔(§6)
@@ -40,9 +43,9 @@ function render() {
   if (!s) return;
   const rt = game.runtime;
   const anim = Date.now() < rt.animUntil ? rt.anim : null;
-  const sprite = selectSprite(s, anim);
+  const sprite = selectSprite(s, anim, settings.hue);
 
-  renderPet(sprite.file);
+  renderPet(sprite.file, sprite.filter);
   renderGauges(s.gauges);
   renderAlert(needsCare(s));
   renderPoops(s.flags.poops);
@@ -77,7 +80,7 @@ function syncScreen() {
   if (cur === 'play') endMiniGame(game);
   else if (cur) closeOverlay(game);
   if (want === 'title') openTitle(game, startNew);
-  if (want === 'gone') openGone(game, resetGame);
+  if (want === 'gone') openGone(game, resetGame, selectSprite(s, null, settings.hue).filter);
   if (want === 'name') {
     openNameInput(game, (name) => {
       game.state.name = name;
@@ -93,6 +96,7 @@ function handleEvents(events) {
   for (const ev of events) {
     if (ev.type === 'evolve') {
       spawnRandom(['props/prop_star.png'], 'fx-evolve', 5, 0.3);
+      beep('evolve');
       showToast(UI.evolveMsg[ev.to], 2500);
     }
   }
@@ -101,6 +105,7 @@ function handleEvents(events) {
 function startNew(colorway) {
   game.state = createState(colorway, '', Date.now());
   save();
+  render();
   syncScreen();
 }
 
@@ -155,6 +160,10 @@ async function init() {
   applyStaticText();
   buildGauges();
   buildActions((key) => handleAction(game, key));
+  loadSettings();
+  document.getElementById('settings-btn').addEventListener('click', () => {
+    if (game.state && !isBusy(game)) openSettings(game);
+  });
 
   // セーブから復帰(オフライン補正は最初の loop() の advance で行う)
   game.state = loadState();

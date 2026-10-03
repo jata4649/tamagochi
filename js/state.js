@@ -113,28 +113,38 @@ export function needsCare(state) {
 
 // 表示するスプライトを決める(§4.4)
 // anim: アクション演出中なら 'eat' | 'play' | 'happy'、無ければ null
-// 戻り値: { file, fallback } fallback=true は「状態絵が無いので idle で代用」の意
-export function selectSprite(state, anim = null) {
+// borrow: true なら B/C も A の状態絵を hue-rotate で色を変えて使う(M5 のオプション・§2.3)
+// 戻り値: { file, filter, fallback, mood }
+//   fallback=true は「状態絵が無いので idle で代用」の意(補助エフェクトを出す)
+export const HUE_FILTER = { a: '', b: 'hue-rotate(106deg) saturate(0.7)', c: 'hue-rotate(296deg)' };
+
+export function selectSprite(state, anim = null, borrow = false) {
   const c = state.colorway;
   const f = state.flags;
   const stage = state.stage;
-  if (f.gone) return { file: 'sprites/pet_a_adult_angel.png', fallback: c !== 'a' };
-  if (stage === 'egg') return { file: 'sprites/pet_egg.png', fallback: false };
+  const canBorrow = c === 'a' || borrow;
+  const filter = c === 'a' ? '' : HUE_FILTER[c];
+  if (f.gone) {
+    return { file: 'sprites/pet_a_adult_angel.png', filter: canBorrow ? filter : '', fallback: false, mood: 'angel' };
+  }
+  if (stage === 'egg') return { file: 'sprites/pet_egg.png', filter: '', fallback: false, mood: 'idle' };
 
-  const idle = `sprites/pet_${c}_${stage}_idle.png`;
+  const idle = { file: `sprites/pet_${c}_${stage}_idle.png`, filter: '' };
   // 状態絵があるのは A のおとな(+ A のベビー眠り)だけ(§2.3)
   const pick = (mood) => {
-    if (c === 'a' && stage === 'adult') return { file: `sprites/pet_a_adult_${mood}.png`, fallback: false };
-    if (c === 'a' && stage === 'baby' && mood === 'sleep') return { file: 'sprites/pet_a_baby_sleep.png', fallback: false };
-    return { file: idle, fallback: true };
+    let file = null;
+    if (stage === 'adult') file = `sprites/pet_a_adult_${mood}.png`;
+    if (stage === 'baby' && mood === 'sleep') file = 'sprites/pet_a_baby_sleep.png';
+    if (file && canBorrow) return { file, filter, fallback: false, mood };
+    return { ...idle, fallback: true, mood };
   };
 
-  if (f.sick) return { ...pick('sick'), mood: 'sick' };
-  if (!f.sleeping && f.poops > 0) return { ...pick('dirty'), mood: 'dirty' };
-  if (f.sleeping) return { ...pick('sleep'), mood: 'sleep' };
-  if (anim) return { ...pick(anim), mood: anim };
-  if (state.gauges.hunger < LOW) return { ...pick('sad'), mood: 'sad' };
-  return { file: idle, fallback: false, mood: 'idle' };
+  if (f.sick) return pick('sick');
+  if (!f.sleeping && f.poops > 0) return pick('dirty');
+  if (f.sleeping) return pick('sleep');
+  if (anim) return pick(anim);
+  if (state.gauges.hunger < LOW) return pick('sad');
+  return { ...idle, fallback: false, mood: 'idle' };
 }
 
 // 夜(18:00〜6:00)かどうか。端末のローカル時刻で判定(§4.3)

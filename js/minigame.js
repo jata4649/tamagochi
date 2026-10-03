@@ -3,6 +3,7 @@
 import { UI } from './strings.js';
 import { el, spriteImg, backButton } from './overlays.js';
 import { spawnFx, spawnRandom } from './effects.js';
+import { beep } from './sound.js';
 
 const ROUNDS = 3;
 const SHUFFLE_MS = 1200;  // ボールが左右にすばやく動く時間
@@ -55,9 +56,21 @@ export function endMiniGame(game) {
   game.render();
 }
 
+// ボールの飛ぶ方向を決める(M5 の乱数調整)
+// 基本は五分五分。ただし同じ方向が3回続かないようにする(運だけで全部外れる/当たるのを減らす)
+function pickAnswer(history) {
+  const ans = Math.random() < 0.5 ? 'left' : 'right';
+  const n = history.length;
+  if (n >= 2 && history[n - 1] === history[n - 2] && history[n - 1] === ans) {
+    return ans === 'left' ? 'right' : 'left';
+  }
+  return ans;
+}
+
 function runGame(game) {
   let round = 0;
   let hits = 0;
+  const history = [];
   const panel = $('minigame');
 
   const nextRound = () => {
@@ -81,13 +94,15 @@ function runGame(game) {
   };
 
   const judge = (guess) => {
-    const answer = Math.random() < 0.5 ? 'left' : 'right';
+    const answer = pickAnswer(history);
+    history.push(answer);
     const hit = guess === answer;
     setBall('fly-' + answer);
     panel.querySelector('.mg-choices').remove();
     panel.querySelector('.mg-text').textContent = hit ? UI.playHit : UI.playMiss;
     if (hit) {
       hits += 1;
+      beep('hit');
       addHappy(game.state, HIT_HAPPY);
       game.runtime.anim = 'play';
       game.runtime.animUntil = Date.now() + ANIM_MS;
@@ -95,6 +110,7 @@ function runGame(game) {
       spawnRandom(['props/prop_note.png', 'props/prop_sparkle.png'], 'fx-pop', 2 + Math.floor(Math.random() * 2));
     } else {
       addHappy(game.state, MISS_HAPPY);
+      beep('miss');
     }
     game.render();
     game.save();

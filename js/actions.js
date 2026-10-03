@@ -4,6 +4,7 @@ import { showToast } from './ui.js';
 import { spawnFx, fadeOutPoops } from './effects.js';
 import { openMealMenu, openStatus } from './overlays.js';
 import { startMiniGame } from './minigame.js';
+import { beep } from './sound.js';
 
 const HOUR = 60 * 60 * 1000;
 const MINUTE = 60 * 1000;
@@ -63,6 +64,7 @@ export function eat(game, food) {
   for (const [k, v] of Object.entries(food.effect)) add(s, k, v * rate);
   if (!food.drink) schedulePoop(s, Date.now());
   playAnim(game, 'eat');
+  beep('eat');
   showFood(food.file);
   heart();
 }
@@ -77,6 +79,7 @@ function snack(game) {
   }
   if (f.snacksCount >= SNACK_MAX) {
     add(s, 'happiness', -5);
+    beep('ng');
     showToast(UI.refuseMoreSnack);
     return;
   }
@@ -85,12 +88,14 @@ function snack(game) {
   add(s, 'happiness', 15);
   schedulePoop(s, now);
   playAnim(game, 'eat');
+  beep('eat');
   showFood('icons/icon_snack.png');
   heart();
 }
 
 function play(game) {
   if (game.state.flags.sick) {
+    beep('ng');
     showToast(UI.cannotPlaySick);
     return;
   }
@@ -99,6 +104,7 @@ function play(game) {
 
 function bath(game) {
   game.runtime.busyUntil = Date.now() + BATH_MS;
+  beep('clean');
   spawnFx('icons/icon_bath.png', 'fx-bath', { left: '50%', top: '10%' });
   for (const pos of [['30%', '35%'], ['62%', '28%'], ['45%', '55%']]) {
     spawnFx('props/prop_sparkle.png', 'fx-sparkle-slow', { left: pos[0], top: pos[1] });
@@ -117,6 +123,7 @@ function toilet(game) {
   if (f.poops === 0) return; // うんちが無ければ何も変わらない
   f.poops = 0;
   fadeOutPoops();
+  beep('clean');
   showToast(UI.cleanPoopDone);
 }
 
@@ -127,9 +134,11 @@ function medicine(game) {
     s.flags.sick = false;
     s.flags.zeroHungerSince = s.gauges.hunger <= 0 ? Date.now() : null;
     add(s, 'happiness', 5);
+    beep('wake');
   } else {
     // 病気でないのに飲んだ(過剰投与ペナルティ)
     add(s, 'happiness', -5);
+    beep('ng');
     showToast(UI.medicineHealthy);
   }
 }
@@ -137,6 +146,7 @@ function medicine(game) {
 function sleep(game) {
   const f = game.state.flags;
   f.sleeping = !f.sleeping;
+  beep(f.sleeping ? 'sleep' : 'wake');
   if (!f.sleeping) {
     add(game.state, 'happiness', 5);
     showToast(UI.wakeUpMsg);
@@ -144,9 +154,12 @@ function sleep(game) {
 }
 
 const HANDLERS = {
-  meal: (game) => openMealMenu(game, FOODS, (food) => { eat(game, food); game.render(); game.save(); }),
+  meal: (game) => {
+    beep('tap');
+    openMealMenu(game, FOODS, (food) => { eat(game, food); game.render(); game.save(); });
+  },
   snack, play, bath, toilet, medicine, sleep,
-  status: (game) => openStatus(game)
+  status: (game) => { beep('tap'); openStatus(game); }
 };
 
 // ボタンが押せない状態か(演出中・オーバーレイ表示中)
@@ -161,6 +174,7 @@ export function handleAction(game, key) {
   const s = game.state;
   // 眠り中は おやすみ 以外を受け付けない
   if (s.flags.sleeping && key !== 'sleep') {
+    beep('ng');
     showToast(UI.sleepingNow);
     return;
   }
