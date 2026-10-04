@@ -1,9 +1,8 @@
-// 初期化・ゲームループの入口
-// タイトル → たまご → 孵化(名前入力)→ 進化 → お別れ → リセット
-// localStorage セーブ・リロード復帰・オフライン補正
-// M5: せってい(B/C の表情流用・効果音・育つはやさ)
+// 初期化・ゲームループの入口(タイトル → たまご → 孵化 → 進化 → お別れ、セーブ・オフライン補正、
+// せってい、ミニゲーム、アルバイト&ショップの入口をここでつなぐ)
 import { UI } from './strings.js';
-import { loadManifest, checkFiles, registerGameAssets, ACTION_ICONS, BG } from './assets.js';
+import { loadManifest, checkFiles, registerGameAssets, registerShopAssets, ACTION_ICONS, BG } from './assets.js';
+import { setupCoinChip, renderCoinChip } from './shop.js';
 import {
   createState, advance, needsCare, selectSprite, isNight, ageParts, PACE
 } from './state.js';
@@ -15,8 +14,7 @@ import { renderPoops, setSleepFx, setSickBadge, spawnRandom } from './effects.js
 import { handleAction, isBusy, FOODS } from './actions.js';
 import { closeOverlay } from './overlays.js';
 import { endMiniGame } from './games/ball.js';
-// ミニゲーム(各ファイルが読み込み時に select.js へ自分を登録する)
-import './games/hilo.js';
+import './games/hilo.js'; // ミニゲーム(読み込み時に select.js へ自分を登録する)
 import './games/mole.js';
 import './games/catch.js';
 import { openTitle, updateTitle, openNameInput, openGone, closeScreen } from './screens.js';
@@ -62,6 +60,7 @@ function render() {
 
   const a = ageParts(s);
   renderTopbar({ name: s.name || UI.defaultName, ageText: UI.ageFormat(a.d, a.h, a.m) });
+  renderCoinChip(game);
 }
 
 // 状態に合った全画面(タイトル・名前入力・お別れ)を出す
@@ -155,6 +154,7 @@ function away(hours) {
 async function init() {
   const manifest = await loadManifest();
   registerGameAssets(manifest); // ミニゲーム素材は category === "minigame" から引く
+  registerShopAssets(manifest); // ショップ素材は category === "shop" から引く(無ければ shop/<名前>.png)
   // 参照する素材が manifest に載っているか確認
   checkFiles(manifest, [
     ...Object.values(ACTION_ICONS), ...Object.values(BG), ...FOODS.map((f) => f.file),
@@ -168,6 +168,7 @@ async function init() {
   buildGauges();
   buildActions((key) => handleAction(game, key));
   loadSettings();
+  setupCoinChip(game);
   document.getElementById('settings-btn').addEventListener('click', () => {
     if (game.state && !isBusy(game)) openSettings(game);
   });

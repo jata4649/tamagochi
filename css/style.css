@@ -769,3 +769,44 @@ html, body {
   from { top: 0; }
   to   { top: calc(100% + 60px); }
 }
+
+/* ===== アルバイト&ショップ: 上部バーの所持ドッチ(タップでおみせ) ===== */
+.coin-chip {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: none;
+  padding: 2px 8px 2px 4px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: bold;
+  color: var(--text);
+  background: var(--btn-bg);
+  border: 2px solid var(--btn-border);
+  border-radius: 999px;
+  cursor: pointer;
+}
+.coin-chip img { height: 24px; } /* 高さのみ指定 */
+.coin-chip.closed { opacity: 0.5; } /* ゲーム中・睡眠中・病気中は入口を閉じる */
+.coin-chip span { font-variant-numeric: tabular-nums; }
+
+/* おみせの見出し */
+.shop-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.shop-head .overlay-title { margin: 0; flex: 1; text-align: left; }
+.shop-head-icon { height: 48px; }
+.shop-purse {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-weight: bold;
+  font-variant-numeric: tabular-nums;
+}
+.shop-purse-icon { height: 28px; }
+/* チップを足した分、上部バーの名前・年齢は1行に収めて「…」で省略する */
+.pet-name, .pet-age { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.topbar { gap: 6px; }

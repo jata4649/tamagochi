@@ -81,6 +81,13 @@ function normalize(raw) {
       plays: Math.max(0, Math.floor(num(src.plays, 0)))
     };
   }
+  // アルバイト&ショップ追加仕様 §2: 無ければ 0 / 中身 0 / null で補う(v2 のまま後付け)
+  s.coins = Math.max(0, Math.floor(num(raw.coins, 0)));
+  const inv = raw.inventory || {};
+  for (const id of Object.keys(s.inventory)) s.inventory[id] = Math.max(0, Math.floor(num(inv[id], 0)));
+  s.slowGlassUntil = num(raw.slowGlassUntil, null);
+  d.coinScale10 = f.coinScale10 === true; // 桁合わせ(×10)は Q1 で実装
+
   // s.version は createState() で常に SAVE_VERSION(2)。次のセーブから v2 で書かれる
   return s;
 }

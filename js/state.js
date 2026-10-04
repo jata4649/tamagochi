@@ -1,5 +1,6 @@
 // セーブデータの形・ゲージ更新・状態判定(仕様書 §4.2〜§4.4・§4.6・§6)
 import { checkEvolution, checkGone } from './lifecycle.js';
+import { ITEM_IDS } from './economy.js';
 
 // 追加仕様 §2.3: ミニゲームの成績(games ブロック)を足して version 2 にした
 export const SAVE_VERSION = 2;
@@ -65,9 +66,12 @@ export function createState(colorway = 'a', name = '', now = Date.now()) {
       zeroHungerSince: null, zeroHappySince: null,
       snacksCount: 0, snacksWindowStart: 0,
       pendingPoopAt: null, miniGameHigh: 0,
-      gone: false
+      gone: false, coinScale10: true // 新しいセーブは最初から新レート(桁合わせ不要)
     },
-    games: createGames()
+    games: createGames(),
+    coins: 0, // ↓3つはアルバイト&ショップ追加仕様 §2(v2 のまま後付け)
+    inventory: Object.fromEntries(ITEM_IDS.map((id) => [id, 0])),
+    slowGlassUntil: null
   };
 }
 

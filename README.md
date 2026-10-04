@@ -106,6 +106,8 @@ js/games/ball.js  … ボールあて(元の「ボールの飛ぶ方向当て」
 js/games/hilo.js  … ハイアンドロー
 js/games/mole.js  … もぐらたたき
 js/games/catch.js … おんぷキャッチ
+js/economy.js     … ドッチ(通貨)の値段・アルバイト代・増減(COIN_RATE で1か所管理)
+js/shop.js        … おみせ(上部バーのチップ・売り物・購入)
 js/ui.js          … 画面描画・トースト
 js/effects.js     … 演出(zzz・うんち・B/C の補助表示など)
 js/settings.js    … せってい画面と設定の保存(tt_settings_v1)
@@ -241,6 +243,17 @@ assets/           … 素材 ZIP の展開物(読み込み専用・編集禁止)
 | お別れ(おなか0 / きげん0) | 40分 / 8時間 | 400分(6時間40分)/ 8時間 |
 | おやつ上限のリセット | 2時間ごと | 同じ |
 | ミニゲーム後の休憩 | 1分 | 同じ |
+
+### アルバイト&ショップ(追加仕様書「tamagotchi_addon_jobs_shop_spec_claude.md」)
+
+| # | 内容 | 決定 |
+|---|---|---|
+| J1 | 新素材の配置 | `assets_5_shop.zip` の9枚を `assets/shop/` にそのまま置いた(ZIP と一致を確認)。ZIP には `manifest.json` の更新が含まれず、今の manifest には `category: "shop"` の項目が無い。`assets/` は編集しないので、`js/assets.js` の `shopFile()` は manifest の shop 項目を優先し、無ければ命名規則 `shop/<名前>.png` で参照する(素材側の manifest が更新されれば自動でそちらを使う) |
+| J2 | ドッチの表示 | 画面のドッチはすべて `UI.coinFormat(n)` =「数字 + ドッチ」(例: `300ドッチ`)。3桁区切りなし |
+| J3 | お金の計算の置き場所 | `js/economy.js` に `COIN_RATE`・`BASE_PRICES`・`BASE_PAYOUT` を1か所にまとめ、値段・アルバイト代はそこから計算する。増減は `addCoins()` で整数・0 未満にしない |
+| J4 | セーブの追加フィールド | `coins` / `inventory` / `slowGlassUntil` を version 2 のまま後付け。読み込み時に無ければ 0 / 中身 0 / null で補う |
+| J5 | おみせの入口 | 上部バーの「がまぐち + 所持ドッチ」チップ。ゲーム中・ほかの画面の表示中は反応しない。寝ている間は `sleepingNow`、病気の間(遊べない間)は `UI.shop.cannotUseNow` をトーストで出して開かない(§7)。閉じている間はチップを薄く表示 |
+| J6 | 上部バーの幅 | チップを足した分、名前と年齢は1行に収めて「…」で省略する |
 
 ## 素材について
 

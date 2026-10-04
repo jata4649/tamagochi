@@ -51,6 +51,22 @@ export function gameFile(key) {
   return gameFiles[key] || `game/game_${key}.png`;
 }
 
+// ショップ素材(アルバイト&ショップ追加仕様 §1)。manifest の category === "shop" から引く
+// キーはファイル名(例: "coin" / "pouch" / "item_bento")。
+// 配布された manifest.json にはまだ shop の項目が無いため、無ければ命名規則 shop/<キー>.png で代替する
+const shopFiles = {};
+
+export function registerShopAssets(manifest) {
+  if (!manifest || !Array.isArray(manifest.items)) return;
+  for (const item of manifest.items) {
+    if (item.category === 'shop') shopFiles[item.file.replace(/^shop\/|\.png$/g, '')] = item.file;
+  }
+}
+
+export function shopFile(key) {
+  return shopFiles[key] || `shop/${key}.png`;
+}
+
 // manifest に載っているかを確認し、載っていなければ警告する(404 の早期発見用)
 export function checkFiles(manifest, files) {
   if (!manifest || !Array.isArray(manifest.items)) return;
