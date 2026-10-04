@@ -826,3 +826,23 @@ html, body {
   60%  { opacity: 1; transform: translateY(-6px); }
   100% { opacity: 1; transform: translateY(0); }
 }
+
+/* ===== おみせの売り物(1列のリスト。狭い画面でも文字が詰まらないように) ===== */
+.shop-grid { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+.shop-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  background: var(--btn-bg);
+  border: 2px solid var(--btn-border);
+  border-radius: 12px;
+}
+.shop-item-img { height: 56px; flex: none; } /* 高さのみ指定 */
+.shop-item-info { flex: 1; min-width: 0; text-align: left; }
+.shop-item-info p { margin: 0; }
+.shop-item-name { font-weight: bold; }
+.shop-item-effect { font-size: 12px; }
+.shop-item-price { display: flex; align-items: center; gap: 2px; font-weight: bold; font-variant-numeric: tabular-nums; }
+.shop-price-coin { height: 18px; }
+.shop-buy { flex: none; margin: 0; min-width: 0; padding: 8px 14px; } /* 説明文の幅を残す */
