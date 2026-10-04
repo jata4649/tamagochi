@@ -39,6 +39,8 @@ function showPanel(on) {
   $('actions').hidden = on;
 }
 
+let session = 0; // 遊びを始める/終えるたびに増やす(古いタイマーを無効にするため)
+
 export function startMiniGame(game) {
   game.runtime.overlay = 'play';
   game.runtime.park = true;
@@ -48,6 +50,7 @@ export function startMiniGame(game) {
 }
 
 export function endMiniGame(game) {
+  session += 1;
   const b = $('mg-ball');
   if (b) b.remove();
   showPanel(false);
@@ -68,6 +71,8 @@ function pickAnswer(history) {
 }
 
 function runGame(game) {
+  const my = ++session;
+  const alive = () => my === session && game.runtime.overlay === 'play';
   let round = 0;
   let hits = 0;
   const history = [];
@@ -81,6 +86,7 @@ function runGame(game) {
     setBall('shuffle');
     // 少し動かしてから選択肢を出す
     setTimeout(() => {
+      if (!alive()) return;
       setBall('center');
       const btns = el('div', 'mg-choices');
       for (const dir of ['left', 'right']) {
@@ -114,7 +120,9 @@ function runGame(game) {
     }
     game.render();
     game.save();
-    setTimeout(round < ROUNDS ? nextRound : finish, RESULT_MS);
+    setTimeout(() => {
+      if (alive()) (round < ROUNDS ? nextRound : finish)();
+    }, RESULT_MS);
   };
 
   const finish = () => {

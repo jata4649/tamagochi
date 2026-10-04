@@ -102,8 +102,15 @@ export function renderAlert(on) {
   $('alert-icon').classList.toggle('blink', on);
 }
 
-// トースト表示(alert() の代わり)
 let toastTimer = null;
+
+// トーストを消す(全画面に切り替わるとき)
+export function hideToast() {
+  clearTimeout(toastTimer);
+  $('toast').classList.remove('show');
+}
+
+// トースト表示(alert() の代わり)
 export function showToast(text, ms = 1800) {
   const el = $('toast');
   el.textContent = text;

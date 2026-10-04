@@ -9,7 +9,7 @@ import {
 } from './state.js';
 import {
   applyStaticText, buildGauges, renderGauges, buildActions, renderTopbar,
-  renderPet, renderBackground, renderAlert, renderActionState, showToast
+  renderPet, renderBackground, renderAlert, renderActionState, showToast, hideToast
 } from './ui.js';
 import { renderPoops, setSleepFx, setSickBadge, spawnRandom } from './effects.js';
 import { handleAction, isBusy, FOODS } from './actions.js';
@@ -79,6 +79,7 @@ function syncScreen() {
   // 開いている他の画面を閉じてから切り替える
   if (cur === 'play') endMiniGame(game);
   else if (cur) closeOverlay(game);
+  if (want !== 'name') hideToast();
   if (want === 'title') openTitle(game, startNew);
   if (want === 'gone') openGone(game, resetGame, selectSprite(s, null, settings.hue).filter);
   if (want === 'name') {

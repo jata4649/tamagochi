@@ -109,10 +109,13 @@ function bath(game) {
   for (const pos of [['30%', '35%'], ['62%', '28%'], ['45%', '55%']]) {
     spawnFx('props/prop_sparkle.png', 'fx-sparkle-slow', { left: pos[0], top: pos[1] });
   }
-  // 3秒の演出が終わったら反映
+  // 3秒の演出が終わったら反映(その間にお別れ・リセットされていたら何もしない)
+  const s = game.state;
   setTimeout(() => {
-    add(game.state, 'cleanliness', 100);
-    add(game.state, 'happiness', 2);
+    if (game.state !== s || s.flags.gone) return;
+    add(s, 'cleanliness', 100);
+    add(s, 'happiness', 2);
+    playAnim(game, 'happy');
     game.render();
     game.save();
   }, BATH_MS);
@@ -123,6 +126,7 @@ function toilet(game) {
   if (f.poops === 0) return; // うんちが無ければ何も変わらない
   f.poops = 0;
   fadeOutPoops();
+  playAnim(game, 'happy');
   beep('clean');
   showToast(UI.cleanPoopDone);
 }
@@ -132,8 +136,8 @@ function medicine(game) {
   spawnFx('icons/icon_medicine.png', 'fx-float', { left: '50%', top: '30%' });
   if (s.flags.sick) {
     s.flags.sick = false;
-    s.flags.zeroHungerSince = s.gauges.hunger <= 0 ? Date.now() : null;
     add(s, 'happiness', 5);
+    playAnim(game, 'happy');
     beep('wake');
   } else {
     // 病気でないのに飲んだ(過剰投与ペナルティ)
@@ -149,6 +153,7 @@ function sleep(game) {
   beep(f.sleeping ? 'sleep' : 'wake');
   if (!f.sleeping) {
     add(game.state, 'happiness', 5);
+    playAnim(game, 'happy');
     showToast(UI.wakeUpMsg);
   }
 }

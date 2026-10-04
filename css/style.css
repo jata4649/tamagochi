@@ -92,6 +92,8 @@ html, body {
   position: relative;
   width: 100%;
   aspect-ratio: 1330 / 1182; /* 背景画像の実寸比。cover なので多少ずれても歪まない */
+  flex: 1 0 auto;            /* スマホでは残りの高さいっぱいに伸ばす(左右が少し切れるだけで床の高さは保たれる) */
+  max-height: 62vh;          /* 伸ばしすぎてペットが大きくなりすぎないように */
   background-image: url("../assets/bg/bg_day_room.png");
   background-size: cover;      /* 引き伸ばし禁止(§2.2 ルール5) */
   background-position: center;
