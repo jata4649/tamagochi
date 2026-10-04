@@ -5,6 +5,7 @@
 import { UI } from '../strings.js';
 import { showToast } from '../ui.js';
 import { el, spriteImg, openOverlay } from '../overlays.js';
+import { payoutFor } from '../economy.js';
 import { PACE, SECOND } from '../state.js';
 
 export const ENERGY_COST = 5;   // 1プレイで げんき −5
@@ -154,13 +155,15 @@ export function addHappy(game, delta) {
   g.happiness = Math.max(0, Math.min(100, g.happiness + delta));
 }
 
-// 成績を記録する。戻り値: { best, isRecord }
-export function recordPlay(game, id, score) {
+// 成績を記録し、アルバイト代を計算する。戻り値: { best, isRecord, paid }
+// paid(ドッチ)は結果画面を表示するときに1回だけ所持ドッチに足す(result.js)
+// opts.perfect: ハイアンドローの全問正解ボーナス用
+export function recordPlay(game, id, score, opts = {}) {
   const stats = game.state.games[id];
   const isRecord = score > stats.best;
   stats.plays += 1;
   if (isRecord) stats.best = score;
-  return { best: stats.best, isRecord };
+  return { best: stats.best, isRecord, paid: payoutFor(id, score, opts) };
 }
 
 // ゲーム画面(全面)を開く。閉じる/差し替えのときに run を必ず片付ける

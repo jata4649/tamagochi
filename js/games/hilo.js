@@ -126,7 +126,7 @@ function play(game) {
   const finish = () => {
     const delta = clampHappy(hiloReward(score));
     addHappy(game, delta);
-    const rec = recordPlay(game, ID, score);
+    const rec = recordPlay(game, ID, score, { perfect: score === ROUNDS });
     startCooldown(ID);
     game.save();
     const done = () => openResult(game, ID, { score, ...rec, onAgain: () => start(game) });

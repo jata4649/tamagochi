@@ -172,9 +172,9 @@ async function init() {
   document.getElementById('settings-btn').addEventListener('click', () => {
     if (game.state && !isBusy(game)) openSettings(game);
   });
-
-  // セーブから復帰(オフライン補正は最初の loop() の advance で行う)
+  // セーブから復帰(オフライン補正は最初の loop() で行う)。読み込み時の補正(桁合わせ等)はすぐ保存
   game.state = loadState();
+  if (game.state) saveState(game.state);
 
   // ページを離れるときにセーブ(§6)
   document.addEventListener('visibilitychange', () => {

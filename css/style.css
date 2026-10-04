@@ -810,3 +810,19 @@ html, body {
 /* チップを足した分、上部バーの名前・年齢は1行に収めて「…」で省略する */
 .pet-name, .pet-age { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .topbar { gap: 6px; }
+
+/* ===== アルバイト代(結果画面) ===== */
+.result-paid {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin: 8px 0 0;
+  font-weight: bold;
+}
+.result-coin { height: 32px; animation: coin-rise 1s ease-out both; } /* 1枚 軽く浮上 */
+@keyframes coin-rise {
+  0%   { opacity: 0; transform: translateY(12px); }
+  60%  { opacity: 1; transform: translateY(-6px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
