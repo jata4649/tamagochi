@@ -156,8 +156,9 @@ export function selectSprite(state, anim = null, borrow = false) {
   const c = state.colorway;
   const f = state.flags;
   const stage = state.stage;
-  const canBorrow = c === 'a' || borrow;
-  const filter = c === 'a' ? '' : HUE_FILTER[c];
+  // 流用できるのは A の色違い(B/C)だけ。新種族 d〜g は別の生き物なので流用しない(idle + 補助表示)
+  const canBorrow = c === 'a' || (borrow && c in HUE_FILTER);
+  const filter = HUE_FILTER[c] ?? '';
   if (f.gone) {
     return { file: 'sprites/pet_a_adult_angel.png', filter: canBorrow ? filter : '', fallback: false, mood: 'angel' };
   }
