@@ -25,7 +25,6 @@ function paceFromUrl() {
 export const SECOND = 1000;
 export const MINUTE = 60 * SECOND;
 export const HOUR = 60 * MINUTE;
-
 // 1倍速の「毎時の増減」× PACE(浮動小数のまま) / 1倍速の「base 分」÷ PACE を ms で(最低1分・§1.4)
 export const pacedRate = (perHour) => perHour * PACE;
 export const pacedMinutes = (base) => Math.max(1, Math.floor(base / PACE)) * MINUTE;
@@ -115,10 +114,11 @@ function step(state, dt, t) {
   const f = state.flags;
   const h = dt / HOUR;
   const idx = f.sleeping ? 1 : 0;
-
-  for (const key of Object.keys(RATES)) g[key] += RATES[key][idx] * h;
-  if (f.poops > 0) g.cleanliness += POOP_CLEAN_PENALTY * h;
-  if (f.sick) g.energy += SICK_ENERGY_PENALTY * h;
+  // スロウ砂時計の効果中(t < slowGlassUntil)は減り(マイナス)だけ半分。回復・進化・イベントには触れない
+  const r = (v) => v * h * (v < 0 && t < (state.slowGlassUntil ?? 0) ? 0.5 : 1);
+  for (const key of Object.keys(RATES)) g[key] += r(RATES[key][idx]);
+  if (f.poops > 0) g.cleanliness += r(POOP_CLEAN_PENALTY);
+  if (f.sick) g.energy += r(SICK_ENERGY_PENALTY);
   for (const key of Object.keys(g)) g[key] = clamp(g[key]);
 
   // うんちの出現(食事の 15〜40 分後に予約されたもの)
