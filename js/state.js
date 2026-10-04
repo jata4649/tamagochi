@@ -5,6 +5,12 @@ import { checkEvolution, checkGone } from './lifecycle.js';
 export const SAVE_VERSION = 2;
 export const GAME_IDS = ['ball', 'hilo', 'mole', 'catch'];
 
+// 種族: タイトルで選べる A/B/C と、孵化のときにランダムで割り当てられる新種族 d〜g
+// (d=ネコ / e=モモンガ / f=うさぎ / g=アザラシ。素材 README「追加(新種族4体)」)
+export const PICKABLE_COLORWAYS = ['a', 'b', 'c'];
+export const NEW_SPECIES = ['d', 'e', 'f', 'g'];
+export const ALL_COLORWAYS = [...PICKABLE_COLORWAYS, ...NEW_SPECIES];
+
 // ===== 進行速度(調整パッチ「tamagotchi_pace_tuneup_spec_claude.md」)=====
 // ゲームの時間パラメータ(減衰・進化・イベント)は、すべて下の「1倍速の値」と PACE から導出する。
 // 速さを変えたいときは PACE だけを変える(3 = 3倍速、2 = 2倍速、1 = 元の仕様書どおり)。

@@ -1,7 +1,7 @@
 // ライフサイクル: 孵化・進化・お別れの判定(仕様書 §4.1・§4.6)
 // 時間は「1倍速の分数」で持ち、state.js の pacedMinutes() で PACE に合わせて縮める
 // (state.js とは互いに import し合うので、PACE を使うのは関数の中だけにしている)
-import { pacedMinutes } from './state.js';
+import { pacedMinutes, NEW_SPECIES } from './state.js';
 
 // 進化スピード(§4.1)。DEMO = 1 / REALISTIC = 0.1。初期値は DEMO
 export const TIME_SCALE = { DEMO: 1, REALISTIC: 0.1 };
@@ -44,8 +44,19 @@ export function checkEvolution(state, t, events) {
   }
 }
 
-// 孵化: 年齢の起点を記録し、ゲージを全て 80 にする(§4.2)
+// 孵化のとき新種族になる確率。外れたら選んだ色(A/B/C)のまま
+export const NEW_SPECIES_CHANCE = 0.5;
+
+// 孵化で生まれる種族を決める。新種族になるときは d〜g から等確率(各 12.5%)
+export function pickSpecies(chosen, rand = Math.random) {
+  if (rand() < NEW_SPECIES_CHANCE) return NEW_SPECIES[Math.floor(rand() * NEW_SPECIES.length)];
+  return chosen;
+}
+
+// 孵化: 種族を決め、年齢の起点を記録し、ゲージを全て 80 にする(§4.2)
+// たまご(pet_egg)は全種族共通なので、何が生まれるかは孵化するまでわからない
 function hatch(state, at) {
+  state.colorway = pickSpecies(state.colorway);
   state.hatchedAt = at;
   for (const key of Object.keys(state.gauges)) state.gauges[key] = 80;
 }

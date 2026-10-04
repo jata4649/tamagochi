@@ -1,6 +1,6 @@
 // localStorage の読み書き(仕様書 §6)
 // オフライン補正は読み込み後に state.advance() で行う(§4.3)
-import { createState, SAVE_VERSION, GAME_IDS } from './state.js';
+import { createState, SAVE_VERSION, GAME_IDS, ALL_COLORWAYS } from './state.js';
 
 export const SAVE_KEY = 'tt_save_v1';
 
@@ -46,7 +46,7 @@ export function clearSave() {
 // 足りない項目は初期値で補い、型を揃える
 function normalize(raw) {
   const now = Date.now();
-  const s = createState(['a', 'b', 'c'].includes(raw.colorway) ? raw.colorway : 'a', '', now);
+  const s = createState(ALL_COLORWAYS.includes(raw.colorway) ? raw.colorway : 'a', '', now);
   const stages = ['egg', 'baby', 'child', 'adult'];
   s.name = typeof raw.name === 'string' ? raw.name : '';
   s.stage = stages.includes(raw.stage) ? raw.stage : 'egg';
