@@ -12,12 +12,10 @@ export const NEW_SPECIES = ['d', 'e', 'f', 'g'];
 export const ALL_COLORWAYS = [...PICKABLE_COLORWAYS, ...NEW_SPECIES];
 
 // ===== 進行速度(調整パッチ「tamagotchi_pace_tuneup_spec_claude.md」)=====
-// ゲームの時間パラメータ(減衰・進化・イベント)は、すべて下の「1倍速の値」と PACE から導出する。
-// 速さを変えたいときは PACE だけを変える(3 = 3倍速、2 = 2倍速、1 = 元の仕様書どおり)。
-// 年齢表示・セーブ時刻・昼夜判定・オフライン補正の上限は実時間のまま(PACE を掛けない)。
+// 時間パラメータ(減衰・進化・イベント)は全て「1倍速の値」と PACE から導出する。速さは PACE だけで変える
+// (3 = 3倍速、1 = 元の仕様書どおり)。年齢・セーブ時刻・昼夜・オフライン上限は実時間のまま。
 // 検収用: URL に ?pace=2 を付けて開くと、その間だけ PACE を差し替えられる(保存はしない)
 export const PACE = paceFromUrl() ?? 3;
-
 function paceFromUrl() {
   const v = Number(new URLSearchParams(location.search).get('pace'));
   return Number.isFinite(v) && v > 0 ? v : null;
@@ -27,14 +25,9 @@ export const SECOND = 1000;
 export const MINUTE = 60 * SECOND;
 export const HOUR = 60 * MINUTE;
 
-// 1倍速の「毎時の増減」を PACE 倍にする(ゲージ減衰は浮動小数のまま計算する)
-export function pacedRate(perHour) {
-  return perHour * PACE;
-}
-// 1倍速で「base 分」の時間を PACE で縮めて ms で返す。0 分にならないよう最低 1 分(§1.4)
-export function pacedMinutes(base) {
-  return Math.max(1, Math.floor(base / PACE)) * MINUTE;
-}
+// 1倍速の「毎時の増減」× PACE(浮動小数のまま) / 1倍速の「base 分」÷ PACE を ms で(最低1分・§1.4)
+export const pacedRate = (perHour) => perHour * PACE;
+export const pacedMinutes = (base) => Math.max(1, Math.floor(base / PACE)) * MINUTE;
 
 export const MAX_OFFLINE_MS = 24 * HOUR; // オフライン補正の上限(§4.3)。実時間のまま変えない
 const STEP_MS = 15 * SECOND;             // 一括計算の刻み幅(反映をなめらかにするため 1分 → 15秒)
