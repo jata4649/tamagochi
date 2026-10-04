@@ -3,7 +3,7 @@
 // localStorage セーブ・リロード復帰・オフライン補正
 // M5: せってい(B/C の表情流用・効果音・育つはやさ)
 import { UI } from './strings.js';
-import { loadManifest, checkFiles, ACTION_ICONS, BG } from './assets.js';
+import { loadManifest, checkFiles, registerGameAssets, ACTION_ICONS, BG } from './assets.js';
 import {
   createState, advance, needsCare, selectSprite, isNight, ageParts
 } from './state.js';
@@ -14,7 +14,11 @@ import {
 import { renderPoops, setSleepFx, setSickBadge, spawnRandom } from './effects.js';
 import { handleAction, isBusy, FOODS } from './actions.js';
 import { closeOverlay } from './overlays.js';
-import { endMiniGame } from './minigame.js';
+import { endMiniGame } from './games/ball.js';
+// ミニゲーム(各ファイルが読み込み時に select.js へ自分を登録する)
+import './games/hilo.js';
+import './games/mole.js';
+import './games/catch.js';
 import { openTitle, updateTitle, openNameInput, openGone, closeScreen } from './screens.js';
 import { TIME_SCALE, setTimeScale } from './lifecycle.js';
 import { saveState, loadState, clearSave, SAVE_KEY } from './save.js';
@@ -149,6 +153,7 @@ function away(hours) {
 
 async function init() {
   const manifest = await loadManifest();
+  registerGameAssets(manifest); // ミニゲーム素材は category === "minigame" から引く
   // 参照する素材が manifest に載っているか確認
   checkFiles(manifest, [
     ...Object.values(ACTION_ICONS), ...Object.values(BG), ...FOODS.map((f) => f.file),

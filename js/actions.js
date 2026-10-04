@@ -3,7 +3,7 @@ import { UI } from './strings.js';
 import { showToast } from './ui.js';
 import { spawnFx, fadeOutPoops } from './effects.js';
 import { openMealMenu, openStatus } from './overlays.js';
-import { startMiniGame } from './minigame.js';
+import { openGameSelect } from './games/select.js';
 import { beep } from './sound.js';
 
 const HOUR = 60 * 60 * 1000;
@@ -99,7 +99,8 @@ function play(game) {
     showToast(UI.cannotPlaySick);
     return;
   }
-  startMiniGame(game);
+  beep('tap');
+  openGameSelect(game); // 追加仕様 §2.1: まずゲームセレクトを開く
 }
 
 function bath(game) {

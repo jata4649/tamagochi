@@ -4,7 +4,7 @@
   "model": "gpt-image-2",
   "sprite_format": "512x512 RGBA transparent; pets bottom-anchored (ground line 24px above bottom), items centered",
   "backgrounds": "1024x1024, no alpha, use as cover",
-  "assets": 54,
+  "assets": 65,
   "items": [
     {
       "file": "sprites/pet_egg.png",
@@ -383,6 +383,83 @@
       "ja": "背景: park",
       "en": "",
       "usage": "画面背景(透過なし・coverで使用)"
+    },
+    {
+      "file": "game/game_card_tree.png",
+      "category": "minigame",
+      "ja": "き(CARD1)",
+      "en": "card_tree",
+      "usage": "ミニゲーム(ハイアンドロー/もぐらたたき/おんぷキャッチ)"
+    },
+    {
+      "file": "game/game_card_cloud.png",
+      "category": "minigame",
+      "ja": "くも(CARD2)",
+      "en": "card_cloud",
+      "usage": "ミニゲーム(ハイアンドロー/もぐらたたき/おんぷキャッチ)"
+    },
+    {
+      "file": "game/game_card_plane.png",
+      "category": "minigame",
+      "ja": "ひこうき(CARD3)",
+      "en": "card_plane",
+      "usage": "ミニゲーム(ハイアンドロー/もぐらたたき/おんぷキャッチ)"
+    },
+    {
+      "file": "game/game_card_sun.png",
+      "category": "minigame",
+      "ja": "たいよう(CARD4)",
+      "en": "card_sun",
+      "usage": "ミニゲーム(ハイアンドロー/もぐらたたき/おんぷキャッチ)"
+    },
+    {
+      "file": "game/game_card_star.png",
+      "category": "minigame",
+      "ja": "ほし(CARD5)",
+      "en": "card_star",
+      "usage": "ミニゲーム(ハイアンドロー/もぐらたたき/おんぷキャッチ)"
+    },
+    {
+      "file": "game/game_card_moon.png",
+      "category": "minigame",
+      "ja": "つき(CARD6)",
+      "en": "card_moon",
+      "usage": "ミニゲーム(ハイアンドロー/もぐらたたき/おんぷキャッチ)"
+    },
+    {
+      "file": "game/game_card_back.png",
+      "category": "minigame",
+      "ja": "カード裏面",
+      "en": "card_back",
+      "usage": "ミニゲーム(ハイアンドロー/もぐらたたき/おんぷキャッチ)"
+    },
+    {
+      "file": "game/game_mole.png",
+      "category": "minigame",
+      "ja": "もぐらくん",
+      "en": "mole",
+      "usage": "ミニゲーム(ハイアンドロー/もぐらたたき/おんぷキャッチ)"
+    },
+    {
+      "file": "game/game_hole.png",
+      "category": "minigame",
+      "ja": "巣穴",
+      "en": "hole",
+      "usage": "ミニゲーム(ハイアンドロー/もぐらたたき/おんぷキャッチ)"
+    },
+    {
+      "file": "game/game_mallet.png",
+      "category": "minigame",
+      "ja": "トンカチ",
+      "en": "mallet",
+      "usage": "ミニゲーム(ハイアンドロー/もぐらたたき/おんぷキャッチ)"
+    },
+    {
+      "file": "game/game_basket.png",
+      "category": "minigame",
+      "ja": "かご",
+      "en": "basket",
+      "usage": "ミニゲーム(ハイアンドロー/もぐらたたき/おんぷキャッチ)"
     }
   ]
 }

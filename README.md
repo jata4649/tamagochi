@@ -71,7 +71,11 @@ js/lifecycle.js   … 孵化・進化・お別れの判定と TIME_SCALE
 js/screens.js     … 全画面(タイトル・名前入力・お別れ)
 js/actions.js     … 8つのボタンアクションの処理・食材データ
 js/overlays.js    … オーバーレイ画面(食事選択・ステータス)
-js/minigame.js    … ミニゲーム(ボールの飛ぶ方向当て)
+js/games/select.js … ゲームセレクト(遊びボタンの入口・4タイル)
+js/games/ball.js  … ボールあて(元の「ボールの飛ぶ方向当て」)
+js/games/hilo.js  … ハイアンドロー
+js/games/mole.js  … もぐらたたき
+js/games/catch.js … おんぷキャッチ
 js/ui.js          … 画面描画・トースト
 js/effects.js     … 演出(zzz・うんち・B/C の補助表示など)
 js/settings.js    … せってい画面と設定の保存(tt_settings_v1)
@@ -136,6 +140,18 @@ assets/           … 素材 ZIP の展開物(読み込み専用・編集禁止)
 | 48 | 「うれしい」(`*_happy`)の演出 | §4.4 にあるが §4.5 で使う場面が決まっていないため、おふろの完了・トイレでうんちを片付けたとき・病気を治したとき・起こしたときに 2.5 秒出す |
 | 49 | 病気を治したときの おなか0 の継続時間 | リセットしない(治療で飢餓によるお別れを先延ばしできないように)。おなか0 のままだと、すぐまた病気になる(§4.6 (b) のとおり)ので、ごはんをあげる必要がある |
 | 50 | スマホでの画面の高さ | ステージ(背景)を残りの高さいっぱいに伸ばす(上限は画面の高さの 62%)。背景は `cover` なので左右が少し切れるだけで、床とペットの足元の位置は揃ったまま |
+
+### ミニゲーム(追加仕様書「tamagotchi_addon_minigames_spec_claude.md」)
+
+| # | 内容 | 決定 |
+|---|---|---|
+| G1 | 素材の配置 | 新しい素材 ZIP をそのまま `assets/` に展開。既存の素材は全ファイル同一で、増えたのは `game/` の11枚。素材パックの `manifest.json`・`README.md`・`_contact_sheet.png` は新しい版に置き換わった(既存項目の変更・削除は無し) |
+| G2 | 新素材の参照 | `js/assets.js` の `registerGameAssets()` が manifest の `category === "minigame"` の項目を `en` 値(`card_tree`・`mole` など)で引けるようにする。manifest が読めないときは命名規則 `game/game_<en>.png` で代替 |
+| G3 | ハイアンドローのサムネ | 追加仕様 §3.0 の `game/card_back` は実際のファイル名 `game/game_card_back.png` で参照 |
+| G4 | ボールあての移設 | `js/minigame.js` を `js/games/ball.js` に移しただけで、遊び方は変えていない |
+| G5 | ゲームの登録 | 各ゲームのファイルが `registerGame()` で select.js に登録し、main.js が各ゲームのファイルを読み込む(select.js から各ゲームを import すると循環 import になるため) |
+| G6 | オーバーレイの後片付け | `openOverlay()` に「閉じる/別の画面に差し替える」ときに必ず呼ばれる関数を渡せるようにした。ミニゲームのタイマーやリスナーはここで解除する |
+| G7 | 追加した文言 | 追加仕様 §4 の `UI.games` をそのまま追加し、「じっそうちゅう」(`wip`)・「スコア」(`scoreLabel`)・「いちばん: 12」の書式(`labelValue`)を足した |
 
 ## 素材について
 

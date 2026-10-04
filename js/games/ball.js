@@ -1,9 +1,11 @@
-// ミニゲーム「ボールの飛ぶ方向当て」(仕様書 §4.7)
+// ボールあて = 既存の「ボールの飛ぶ方向当て」(仕様書 §4.7 / 追加仕様 §3.1)
 // 遊び中は背景を公園にし、ゲージとボタンの代わりにこのパネルを出す
-import { UI } from './strings.js';
-import { el, spriteImg, backButton } from './overlays.js';
-import { spawnFx, spawnRandom } from './effects.js';
-import { beep } from './sound.js';
+// 追加仕様に合わせてファイルを js/games/ に移しただけで、遊び方は変えていない
+import { UI } from '../strings.js';
+import { el, spriteImg, backButton } from '../overlays.js';
+import { spawnFx, spawnRandom } from '../effects.js';
+import { beep } from '../sound.js';
+import { registerGame } from './select.js';
 
 const ROUNDS = 3;
 const SHUFFLE_MS = 1200;  // ボールが左右にすばやく動く時間
@@ -148,3 +150,5 @@ function runGame(game) {
 
   nextRound();
 }
+
+registerGame('ball', { thumb: 'props/prop_ball.png', label: UI.games.names.ball, start: startMiniGame });

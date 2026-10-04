@@ -79,3 +79,24 @@ export const UI = {
   on: "オン",
   off: "オフ"
 };
+
+// ミニゲーム追加(追加仕様 §4)。既存の文言は変更しない
+UI.games = {
+  selectTitle: "遊びをえらんでね",
+  back: "もどる",
+  again: "もう一回",
+  resultTitle: "けっか",
+  bestLabel: "いちばん",
+  newRecord: "きろく更新!",
+  cooldown: "ちょい 休憩 ね…",
+  lowEnergy: "げんきが 足りないよ",
+  names: { ball: "ボールあて", hilo: "ハイアンドロー", mole: "もぐらたたき", catch: "おんぷキャッチ" },
+  hilo: { higher: "たかい", lower: "ひくい", question: "つぎの きゃら? たかい? ひくい?" },
+  mole: { timeLeft: "のこり" },
+  catch: { left: "ひだり", right: "みぎ" },
+
+  // --- 以下は追加仕様に無いため追加した文言(README「仕様メモ」参照) ---
+  wip: "じっそうちゅう",
+  scoreLabel: "スコア",
+  labelValue: (label, v) => `${label}: ${v}`
+};

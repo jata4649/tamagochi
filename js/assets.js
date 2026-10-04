@@ -35,6 +35,22 @@ export const BG = {
   park: 'bg/bg_park.png'
 };
 
+// ミニゲーム素材(追加仕様 §1)。manifest の category === "minigame" から引く
+// キーは manifest の en 値(例: "card_tree" / "mole" / "basket")
+const gameFiles = {};
+
+export function registerGameAssets(manifest) {
+  if (!manifest || !Array.isArray(manifest.items)) return;
+  for (const item of manifest.items) {
+    if (item.category === 'minigame') gameFiles[item.en] = item.file;
+  }
+}
+
+// manifest が読めなかったときは命名規則どおりのパスで代替する
+export function gameFile(key) {
+  return gameFiles[key] || `game/game_${key}.png`;
+}
+
 // manifest に載っているかを確認し、載っていなければ警告する(404 の早期発見用)
 export function checkFiles(manifest, files) {
   if (!manifest || !Array.isArray(manifest.items)) return;
