@@ -24,6 +24,7 @@ import { TIME_SCALE, setTimeScale } from './lifecycle.js';
 import { saveState, loadState, clearSave, SAVE_KEY } from './save.js';
 import { settings, loadSettings, openSettings } from './settings.js';
 import { beep } from './sound.js';
+import { gameDebug, clearCooldowns } from './games/common.js';
 
 const TICK_MS = 1000;
 const SAVE_EVERY_MS = 60 * 1000; // ゲージ更新のセーブ間隔(§6)
@@ -185,6 +186,8 @@ async function init() {
   game.setTimeScale = setTimeScale;
   game.TIME_SCALE = TIME_SCALE;
   game.away = away;
+  game.gameDebug = gameDebug;       // ミニゲームのタイマー等の数(終了後は 0)
+  game.clearCooldowns = clearCooldowns; // ミニゲームの休憩を解除
   window.tt = game;
 
   loop();

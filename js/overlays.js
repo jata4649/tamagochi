@@ -33,7 +33,7 @@ export function openOverlay(game, name, content, onClose = null) {
   runCleanup();
   const box = $('overlay');
   box.textContent = '';
-  box.classList.remove('screen');
+  box.className = 'overlay'; // 前の画面の見た目(全面表示など)を外す
   const panel = el('div', 'overlay-panel');
   panel.appendChild(content);
   box.appendChild(panel);
@@ -45,7 +45,7 @@ export function openOverlay(game, name, content, onClose = null) {
 export function closeOverlay(game) {
   runCleanup();
   const box = $('overlay');
-  box.classList.remove('show');
+  box.className = 'overlay';
   box.textContent = '';
   game.runtime.overlay = null;
   game.render();

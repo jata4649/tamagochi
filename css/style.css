@@ -557,3 +557,127 @@ html, body {
 .game-thumb { height: 72px; } /* 高さのみ指定 */
 .game-name { font-size: 14px; font-weight: bold; }
 .game-sub { font-size: 12px; color: var(--text-sub); }
+
+/* ===== ミニゲーム共通: ゲーム画面(全面・公園の背景) ===== */
+.overlay.game-overlay .overlay-panel {
+  padding: 0;
+  justify-content: stretch; /* ゲーム画面を高さいっぱいに(ボタンを画面下に固定するため) */
+  background-image: url("../assets/bg/bg_park.png");
+  background-size: cover;   /* 引き伸ばし禁止 */
+  background-position: center;
+  image-rendering: pixelated;
+}
+.game-screen {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 100%;
+  padding: 10px 12px 16px;
+  overflow: hidden;
+}
+/* 各ゲームの中身も縦いっぱいに広げる(.game-controls を画面下に固定するため) */
+.game-screen > * {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+}
+.game-screen.no-touch { touch-action: none; } /* もぐらたたき・おんぷキャッチ: 画面がスクロールしないように */
+.game-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: rgba(255, 248, 239, 0.9);
+  border: 2px solid var(--card-border);
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: bold;
+}
+.game-round { flex: 1; text-align: center; }
+.game-score { font-variant-numeric: tabular-nums; }
+.game-quit {
+  padding: 4px 10px;
+  font: inherit;
+  font-size: 12px;
+  color: var(--text);
+  background: var(--btn-bg);
+  border: 2px solid var(--btn-border);
+  border-radius: 999px;
+  cursor: pointer;
+}
+.game-text {
+  margin: 8px auto;
+  padding: 6px 12px;
+  font-size: 15px;
+  font-weight: bold;
+  text-align: center;
+  background: rgba(255, 248, 239, 0.9);
+  border-radius: 10px;
+}
+/* ボタンは画面下に固定 */
+.game-controls {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-top: auto;
+  padding-top: 10px;
+}
+.game-controls .pill-btn { margin: 0; min-width: 130px; font-size: 18px; font-weight: bold; }
+.game-screen .fx { position: absolute; transform: translate(-50%, 0); }
+
+/* ===== ハイアンドロー ===== */
+.hilo-strip {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  min-height: 44px;
+  margin-top: 8px;
+}
+.hilo-mini { height: 44px; } /* 使ったカード(高さのみ指定) */
+.hilo-table {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  perspective: 600px;
+}
+.hilo-card { flex: none; }
+.hilo-face { height: 200px; display: block; } /* 高さのみ指定 */
+.hilo-next.flip { animation: card-flip 0.5s ease-in-out; }
+@keyframes card-flip {
+  0%   { transform: rotateY(0deg); }
+  50%  { transform: rotateY(90deg); }
+  100% { transform: rotateY(0deg); }
+}
+.fx-big-star { height: 45%; animation: big-star 1.2s ease-out both; }
+@keyframes big-star {
+  0%   { opacity: 0; transform: translate(-50%, 0) scale(0.3) rotate(-30deg); }
+  40%  { opacity: 1; transform: translate(-50%, -10%) scale(1.15) rotate(10deg); }
+  100% { opacity: 0; transform: translate(-50%, -30%) scale(1) rotate(0deg); }
+}
+
+/* ===== 共通の結果画面 ===== */
+.game-result { text-align: center; }
+.result-game { margin: 0; font-size: 14px; color: var(--text-sub); }
+.result-heart { height: 56px; animation: pop-fade-keep 1s ease-out both; }
+@keyframes pop-fade-keep {
+  0%   { opacity: 0; transform: scale(0.4); }
+  60%  { opacity: 1; transform: scale(1.15); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.result-score { margin: 4px 0; font-size: 22px; font-weight: bold; }
+.result-best { margin: 0; font-size: 15px; }
+.result-record {
+  display: inline-block;
+  margin: 8px 0 0;
+  padding: 4px 12px;
+  font-weight: bold;
+  color: #fff;
+  background: var(--gauge-bad);
+  border-radius: 999px;
+  animation: blink 0.6s ease-in-out infinite alternate;
+}
+.result-note { min-height: 1.3em; margin: 6px 0 0; font-size: 12px; color: var(--text-sub); }

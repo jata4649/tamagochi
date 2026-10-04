@@ -37,10 +37,9 @@ function tile(game, id) {
     b.appendChild(el('span', 'game-sub', UI.games.labelValue(UI.games.bestLabel, stats.best)));
   }
 
-  b.addEventListener('click', () => {
-    closeOverlay(game);
-    def.start(game);
-  });
+  // 開始できるか(病気・げんき・休憩)は各ゲームの start() が判断する
+  // 開始できないときはこの画面のままトーストで理由を出す
+  b.addEventListener('click', () => def.start(game));
   return b;
 }
 

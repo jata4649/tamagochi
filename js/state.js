@@ -1,7 +1,9 @@
 // セーブデータの形・ゲージ更新・状態判定(仕様書 §4.2〜§4.4・§4.6・§6)
 import { checkEvolution, checkGone } from './lifecycle.js';
 
-export const SAVE_VERSION = 1;
+// 追加仕様 §2.3: ミニゲームの成績(games ブロック)を足して version 2 にした
+export const SAVE_VERSION = 2;
+export const GAME_IDS = ['ball', 'hilo', 'mole', 'catch'];
 
 const HOUR = 60 * 60 * 1000;
 const MINUTE = 60 * 1000;
@@ -41,8 +43,16 @@ export function createState(colorway = 'a', name = '', now = Date.now()) {
       snacksCount: 0, snacksWindowStart: 0,
       pendingPoopAt: null, miniGameHigh: 0,
       gone: false
-    }
+    },
+    games: createGames()
   };
+}
+
+// ミニゲームの成績(追加仕様 §2.3)
+export function createGames() {
+  const games = {};
+  for (const id of GAME_IDS) games[id] = { best: 0, plays: 0 };
+  return games;
 }
 
 // 経過時間ぶん状態を進める(オフライン分もこれで一括計算する)

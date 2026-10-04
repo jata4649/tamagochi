@@ -2,7 +2,7 @@
 // 遊び中は背景を公園にし、ゲージとボタンの代わりにこのパネルを出す
 // 追加仕様に合わせてファイルを js/games/ に移しただけで、遊び方は変えていない
 import { UI } from '../strings.js';
-import { el, spriteImg, backButton } from '../overlays.js';
+import { el, spriteImg, backButton, closeOverlay } from '../overlays.js';
 import { spawnFx, spawnRandom } from '../effects.js';
 import { beep } from '../sound.js';
 import { registerGame } from './select.js';
@@ -151,4 +151,12 @@ function runGame(game) {
   nextRound();
 }
 
-registerGame('ball', { thumb: 'props/prop_ball.png', label: UI.games.names.ball, start: startMiniGame });
+// セレクト画面を閉じてから始める
+registerGame('ball', {
+  thumb: 'props/prop_ball.png',
+  label: UI.games.names.ball,
+  start: (game) => {
+    closeOverlay(game);
+    startMiniGame(game);
+  }
+});
