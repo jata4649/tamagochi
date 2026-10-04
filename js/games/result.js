@@ -7,7 +7,8 @@ import { openGameSelect } from './select.js';
 
 // score: 今回のスコア / best: これまでの最高 / isRecord: 記録更新したか
 // onAgain(): もう一回(休憩中は押せない)
-export function openResult(game, id, { score, best, isRecord, onAgain }) {
+// againBlocked(): 休憩のほかに「もう一回」を止める理由があれば文言を返す(ボールあての きげん最大など)
+export function openResult(game, id, { score, best, isRecord, onAgain, againBlocked = () => null }) {
   const run = createRun();
   const root = el('div', 'game-result');
   root.appendChild(el('h2', 'overlay-title', UI.games.resultTitle));
@@ -38,9 +39,9 @@ export function openResult(game, id, { score, best, isRecord, onAgain }) {
 
   // 休憩中は「もう一回」を押せない。3分たったら押せるようにする
   const refresh = () => {
-    const cooling = isCoolingDown(id);
-    again.disabled = cooling;
-    note.textContent = cooling ? UI.games.cooldown : '';
+    const reason = isCoolingDown(id) ? UI.games.cooldown : againBlocked();
+    again.disabled = Boolean(reason);
+    note.textContent = reason || '';
   };
   refresh();
   run.interval(refresh, 1000);

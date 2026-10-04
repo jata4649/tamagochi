@@ -3,6 +3,7 @@
 // (select.js から各ゲームを import しない。循環 import を避けるため main.js が各ゲームを読み込む)
 import { UI } from '../strings.js';
 import { el, spriteImg, openOverlay, closeOverlay } from '../overlays.js';
+import { createRun, isCoolingDown } from './common.js';
 
 // タイルの並び(2×2)
 const ORDER = ['ball', 'hilo', 'mole', 'catch'];
@@ -43,7 +44,16 @@ function tile(game, id) {
   return b;
 }
 
+// 休憩中のタイルは薄く(opacity 0.5)して押せなくする。残り時間は出さない(§3.0)
+function refreshCooldown(grid) {
+  for (const b of grid.querySelectorAll('.game-tile')) {
+    const def = registry.get(b.dataset.game);
+    if (def.start) b.disabled = isCoolingDown(b.dataset.game);
+  }
+}
+
 export function openGameSelect(game) {
+  const run = createRun();
   const root = el('div', 'game-select');
   root.appendChild(el('h2', 'overlay-title', UI.games.selectTitle));
   const grid = el('div', 'game-grid');
@@ -51,9 +61,11 @@ export function openGameSelect(game) {
     if (registry.has(id)) grid.appendChild(tile(game, id));
   }
   root.appendChild(grid);
+  refreshCooldown(grid);
+  run.interval(() => refreshCooldown(grid), 1000); // 3分たったら押せるようにする
   const back = el('button', 'pill-btn', UI.games.back);
   back.type = 'button';
   back.addEventListener('click', () => closeOverlay(game));
   root.appendChild(back);
-  openOverlay(game, 'games', root);
+  openOverlay(game, 'games', root, () => run.dispose());
 }
