@@ -2,7 +2,7 @@
 // いずれも #overlay を全面(.screen)で使う
 import { UI } from './strings.js';
 import { el, spriteImg, openOverlay, closeOverlay } from './overlays.js';
-import { ageParts } from './state.js';
+import { ageParts, PICKABLE_COLORWAYS } from './state.js';
 import { msUntilHatch } from './lifecycle.js';
 
 const NAME_MAX = 8;
@@ -31,7 +31,7 @@ export function openTitle(game, onStart) {
   pick.id = 'color-pick';
   pick.appendChild(el('p', 'color-pick-label', UI.colorPick));
   const row = el('div', 'color-row');
-  for (const c of ['a', 'b', 'c']) {
+  for (const c of PICKABLE_COLORWAYS) { // 選べるのは A/B/C だけ(新種族は孵化のときに決まる)
     const b = button('', 'color-btn', () => {
       colorway = c;
       row.querySelectorAll('.color-btn').forEach((x) => x.classList.toggle('selected', x === b));

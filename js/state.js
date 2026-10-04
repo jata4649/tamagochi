@@ -1,24 +1,49 @@
 // セーブデータの形・ゲージ更新・状態判定(仕様書 §4.2〜§4.4・§4.6・§6)
 import { checkEvolution, checkGone } from './lifecycle.js';
 
-export const SAVE_VERSION = 1;
+// 追加仕様 §2.3: ミニゲームの成績(games ブロック)を足して version 2 にした
+export const SAVE_VERSION = 2;
+export const GAME_IDS = ['ball', 'hilo', 'mole', 'catch'];
 
-const HOUR = 60 * 60 * 1000;
-const MINUTE = 60 * 1000;
-export const MAX_OFFLINE_MS = 24 * HOUR; // オフライン補正の上限(§4.3)
-const STEP_MS = MINUTE;                  // 一括計算の刻み幅
+// 種族: タイトルで選べる A/B/C と、孵化のときにランダムで割り当てられる新種族 d〜g
+// (d=ネコ / e=モモンガ / f=うさぎ / g=アザラシ。素材 README「追加(新種族4体)」)
+export const PICKABLE_COLORWAYS = ['a', 'b', 'c'];
+export const NEW_SPECIES = ['d', 'e', 'f', 'g'];
+export const ALL_COLORWAYS = [...PICKABLE_COLORWAYS, ...NEW_SPECIES];
 
-// 1時間あたりの増減(§4.2)。[覚醒, 睡眠]
+// ===== 進行速度(調整パッチ「tamagotchi_pace_tuneup_spec_claude.md」)=====
+// 時間パラメータ(減衰・進化・イベント)は全て「1倍速の値」と PACE から導出する。速さは PACE だけで変える
+// (3 = 3倍速、1 = 元の仕様書どおり)。年齢・セーブ時刻・昼夜・オフライン上限は実時間のまま。
+// 検収用: URL に ?pace=2 を付けて開くと、その間だけ PACE を差し替えられる(保存はしない)
+export const PACE = paceFromUrl() ?? 3;
+function paceFromUrl() {
+  const v = Number(new URLSearchParams(location.search).get('pace'));
+  return Number.isFinite(v) && v > 0 ? v : null;
+}
+
+export const SECOND = 1000;
+export const MINUTE = 60 * SECOND;
+export const HOUR = 60 * MINUTE;
+
+// 1倍速の「毎時の増減」× PACE(浮動小数のまま) / 1倍速の「base 分」÷ PACE を ms で(最低1分・§1.4)
+export const pacedRate = (perHour) => perHour * PACE;
+export const pacedMinutes = (base) => Math.max(1, Math.floor(base / PACE)) * MINUTE;
+
+export const MAX_OFFLINE_MS = 24 * HOUR; // オフライン補正の上限(§4.3)。実時間のまま変えない
+const STEP_MS = 15 * SECOND;             // 一括計算の刻み幅(反映をなめらかにするため 1分 → 15秒)
+
+// 1時間あたりの増減(§4.2 の1倍速の値 × PACE)。[覚醒, 睡眠]
 const RATES = {
-  hunger: [-8, -3],
-  happiness: [-5, -2],
-  cleanliness: [-4, -1],
-  energy: [-6, 12]
+  hunger: [pacedRate(-8), pacedRate(-3)],
+  happiness: [pacedRate(-5), pacedRate(-2)],
+  cleanliness: [pacedRate(-4), pacedRate(-1)],
+  energy: [pacedRate(-6), pacedRate(12)]
 };
-const POOP_CLEAN_PENALTY = -8;   // うんちがある間の追加減衰/時
-const SICK_ENERGY_PENALTY = -10; // 病気中の追加減衰/時
-const SICK_CHANCE_PER_10MIN = 0.15;
-const HUNGER_ZERO_SICK_MS = 1 * HOUR;
+const POOP_CLEAN_PENALTY = pacedRate(-8); // うんちがある間の追加減衰/時
+const SICK_ENERGY_PENALTY = pacedRate(-10); // 病気中の げんき 追加減衰/時(PACE=3 で −30)
+const SICK_CHANCE = 0.15;                    // 発病 (a) の確率(1回の判定あたり)
+const SICK_ROLL_MS = pacedMinutes(10);       // 発病 (a) の判定間隔(PACE=3 で 3分ごと)
+const HUNGER_ZERO_SICK_MS = pacedMinutes(60); // 発病 (b): おなか0 が続く時間(PACE=3 で 20分)
 export const MAX_POOPS = 2;
 export const LOW = 30; // これ未満で「低い」扱い(alert・sad)
 
@@ -41,8 +66,16 @@ export function createState(colorway = 'a', name = '', now = Date.now()) {
       snacksCount: 0, snacksWindowStart: 0,
       pendingPoopAt: null, miniGameHigh: 0,
       gone: false
-    }
+    },
+    games: createGames()
   };
+}
+
+// ミニゲームの成績(追加仕様 §2.3)
+export function createGames() {
+  const games = {};
+  for (const id of GAME_IDS) games[id] = { best: 0, plays: 0 };
+  return games;
 }
 
 // 経過時間ぶん状態を進める(オフライン分もこれで一括計算する)
@@ -97,7 +130,7 @@ function step(state, dt, t) {
   // 発病判定(§4.6)
   if (!f.sick) {
     const dirty = f.poops > 0 && g.cleanliness < LOW;
-    const pChance = 1 - Math.pow(1 - SICK_CHANCE_PER_10MIN, dt / (10 * MINUTE));
+    const pChance = 1 - Math.pow(1 - SICK_CHANCE, dt / SICK_ROLL_MS);
     if (dirty && Math.random() < pChance) f.sick = true;
     if (f.zeroHungerSince !== null && t - f.zeroHungerSince >= HUNGER_ZERO_SICK_MS) f.sick = true;
   }
@@ -122,8 +155,9 @@ export function selectSprite(state, anim = null, borrow = false) {
   const c = state.colorway;
   const f = state.flags;
   const stage = state.stage;
-  const canBorrow = c === 'a' || borrow;
-  const filter = c === 'a' ? '' : HUE_FILTER[c];
+  // 流用できるのは A の色違い(B/C)だけ。新種族 d〜g は別の生き物なので流用しない(idle + 補助表示)
+  const canBorrow = c === 'a' || (borrow && c in HUE_FILTER);
+  const filter = HUE_FILTER[c] ?? '';
   if (f.gone) {
     return { file: 'sprites/pet_a_adult_angel.png', filter: canBorrow ? filter : '', fallback: false, mood: 'angel' };
   }

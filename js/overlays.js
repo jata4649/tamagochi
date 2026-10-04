@@ -19,21 +19,33 @@ export function spriteImg(file, className = '') {
   return img;
 }
 
+// 閉じる・差し替えるときに呼ぶ後片付け(ミニゲームのタイマー解除など)
+let cleanup = null;
+function runCleanup() {
+  const fn = cleanup;
+  cleanup = null;
+  if (fn) fn();
+}
+
 // オーバーレイを開く。content はパネルの中身
-export function openOverlay(game, name, content) {
+// onClose: このオーバーレイが閉じられる/別の画面に差し替えられるときに必ず呼ばれる
+export function openOverlay(game, name, content, onClose = null) {
+  runCleanup();
   const box = $('overlay');
   box.textContent = '';
-  box.classList.remove('screen');
+  box.className = 'overlay'; // 前の画面の見た目(全面表示など)を外す
   const panel = el('div', 'overlay-panel');
   panel.appendChild(content);
   box.appendChild(panel);
   box.classList.add('show');
   game.runtime.overlay = name;
+  cleanup = onClose;
 }
 
 export function closeOverlay(game) {
+  runCleanup();
   const box = $('overlay');
-  box.classList.remove('show');
+  box.className = 'overlay';
   box.textContent = '';
   game.runtime.overlay = null;
   game.render();

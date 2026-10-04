@@ -1,6 +1,6 @@
 // localStorage の読み書き(仕様書 §6)
 // オフライン補正は読み込み後に state.advance() で行う(§4.3)
-import { createState, SAVE_VERSION } from './state.js';
+import { createState, SAVE_VERSION, GAME_IDS, ALL_COLORWAYS } from './state.js';
 
 export const SAVE_KEY = 'tt_save_v1';
 
@@ -21,6 +21,7 @@ export function saveState(state) {
 }
 
 // 読み込み。無い・壊れている・新しすぎる version のときは null(新規開始)
+// version 1 のセーブは、既存の項目をそのまま引き継いで version 2(games ブロック付き)に上げる
 export function loadState() {
   let raw;
   try {
@@ -30,7 +31,7 @@ export function loadState() {
     return null;
   }
   if (!raw || typeof raw !== 'object') return null;
-  if (num(raw.version, 0) > SAVE_VERSION) return null; // 本書より新しい → 無視
+  if (num(raw.version, 0) > SAVE_VERSION) return null; // 対応より新しい → 無視して新規開始
   return normalize(raw);
 }
 
@@ -45,7 +46,7 @@ export function clearSave() {
 // 足りない項目は初期値で補い、型を揃える
 function normalize(raw) {
   const now = Date.now();
-  const s = createState(['a', 'b', 'c'].includes(raw.colorway) ? raw.colorway : 'a', '', now);
+  const s = createState(ALL_COLORWAYS.includes(raw.colorway) ? raw.colorway : 'a', '', now);
   const stages = ['egg', 'baby', 'child', 'adult'];
   s.name = typeof raw.name === 'string' ? raw.name : '';
   s.stage = stages.includes(raw.stage) ? raw.stage : 'egg';
@@ -70,5 +71,16 @@ function normalize(raw) {
   d.snacksWindowStart = num(f.snacksWindowStart, 0);
   d.pendingPoopAt = num(f.pendingPoopAt, null);
   d.miniGameHigh = num(f.miniGameHigh, 0);
+
+  // games ブロック(v1 には無いので初期値になる = v1 → v2 のマイグレーション)
+  const games = raw.games || {};
+  for (const id of GAME_IDS) {
+    const src = games[id] || {};
+    s.games[id] = {
+      best: Math.max(0, num(src.best, 0)),
+      plays: Math.max(0, Math.floor(num(src.plays, 0)))
+    };
+  }
+  // s.version は createState() で常に SAVE_VERSION(2)。次のセーブから v2 で書かれる
   return s;
 }

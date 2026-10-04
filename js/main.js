@@ -3,9 +3,9 @@
 // localStorage セーブ・リロード復帰・オフライン補正
 // M5: せってい(B/C の表情流用・効果音・育つはやさ)
 import { UI } from './strings.js';
-import { loadManifest, checkFiles, ACTION_ICONS, BG } from './assets.js';
+import { loadManifest, checkFiles, registerGameAssets, ACTION_ICONS, BG } from './assets.js';
 import {
-  createState, advance, needsCare, selectSprite, isNight, ageParts
+  createState, advance, needsCare, selectSprite, isNight, ageParts, PACE
 } from './state.js';
 import {
   applyStaticText, buildGauges, renderGauges, buildActions, renderTopbar,
@@ -14,15 +14,20 @@ import {
 import { renderPoops, setSleepFx, setSickBadge, spawnRandom } from './effects.js';
 import { handleAction, isBusy, FOODS } from './actions.js';
 import { closeOverlay } from './overlays.js';
-import { endMiniGame } from './minigame.js';
+import { endMiniGame } from './games/ball.js';
+// ミニゲーム(各ファイルが読み込み時に select.js へ自分を登録する)
+import './games/hilo.js';
+import './games/mole.js';
+import './games/catch.js';
 import { openTitle, updateTitle, openNameInput, openGone, closeScreen } from './screens.js';
 import { TIME_SCALE, setTimeScale } from './lifecycle.js';
 import { saveState, loadState, clearSave, SAVE_KEY } from './save.js';
 import { settings, loadSettings, openSettings } from './settings.js';
 import { beep } from './sound.js';
+import { gameDebug, clearCooldowns } from './games/common.js';
 
 const TICK_MS = 1000;
-const SAVE_EVERY_MS = 60 * 1000; // ゲージ更新のセーブ間隔(§6)
+const SAVE_EVERY_MS = 15 * 1000; // ゲージ更新のセーブ間隔(§6。調整パッチ §1.4 で 1分 → 15秒)
 const SCREENS = ['title', 'name', 'gone'];
 
 // 実行時の状態(セーブ対象外のものは runtime に置く)
@@ -149,6 +154,7 @@ function away(hours) {
 
 async function init() {
   const manifest = await loadManifest();
+  registerGameAssets(manifest); // ミニゲーム素材は category === "minigame" から引く
   // 参照する素材が manifest に載っているか確認
   checkFiles(manifest, [
     ...Object.values(ACTION_ICONS), ...Object.values(BG), ...FOODS.map((f) => f.file),
@@ -180,6 +186,9 @@ async function init() {
   game.setTimeScale = setTimeScale;
   game.TIME_SCALE = TIME_SCALE;
   game.away = away;
+  game.PACE = PACE;                 // 進行速度(確認用・読み取りのみ)
+  game.gameDebug = gameDebug;       // ミニゲームのタイマー等の数(終了後は 0)
+  game.clearCooldowns = clearCooldowns; // ミニゲームの休憩を解除
   window.tt = game;
 
   loop();
