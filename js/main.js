@@ -5,7 +5,7 @@
 import { UI } from './strings.js';
 import { loadManifest, checkFiles, registerGameAssets, ACTION_ICONS, BG } from './assets.js';
 import {
-  createState, advance, needsCare, selectSprite, isNight, ageParts
+  createState, advance, needsCare, selectSprite, isNight, ageParts, PACE
 } from './state.js';
 import {
   applyStaticText, buildGauges, renderGauges, buildActions, renderTopbar,
@@ -27,7 +27,7 @@ import { beep } from './sound.js';
 import { gameDebug, clearCooldowns } from './games/common.js';
 
 const TICK_MS = 1000;
-const SAVE_EVERY_MS = 60 * 1000; // ゲージ更新のセーブ間隔(§6)
+const SAVE_EVERY_MS = 15 * 1000; // ゲージ更新のセーブ間隔(§6。調整パッチ §1.4 で 1分 → 15秒)
 const SCREENS = ['title', 'name', 'gone'];
 
 // 実行時の状態(セーブ対象外のものは runtime に置く)
@@ -186,6 +186,7 @@ async function init() {
   game.setTimeScale = setTimeScale;
   game.TIME_SCALE = TIME_SCALE;
   game.away = away;
+  game.PACE = PACE;                 // 進行速度(確認用・読み取りのみ)
   game.gameDebug = gameDebug;       // ミニゲームのタイマー等の数(終了後は 0)
   game.clearCooldowns = clearCooldowns; // ミニゲームの休憩を解除
   window.tt = game;

@@ -5,19 +5,42 @@ import { checkEvolution, checkGone } from './lifecycle.js';
 export const SAVE_VERSION = 2;
 export const GAME_IDS = ['ball', 'hilo', 'mole', 'catch'];
 
-const HOUR = 60 * 60 * 1000;
-const MINUTE = 60 * 1000;
-export const MAX_OFFLINE_MS = 24 * HOUR; // オフライン補正の上限(§4.3)
-const STEP_MS = MINUTE;                  // 一括計算の刻み幅
+// ===== 進行速度(調整パッチ「tamagotchi_pace_tuneup_spec_claude.md」)=====
+// ゲームの時間パラメータ(減衰・進化・イベント)は、すべて下の「1倍速の値」と PACE から導出する。
+// 速さを変えたいときは PACE だけを変える(3 = 3倍速、2 = 2倍速、1 = 元の仕様書どおり)。
+// 年齢表示・セーブ時刻・昼夜判定・オフライン補正の上限は実時間のまま(PACE を掛けない)。
+// 検収用: URL に ?pace=2 を付けて開くと、その間だけ PACE を差し替えられる(保存はしない)
+export const PACE = paceFromUrl() ?? 3;
 
-// 1時間あたりの増減(§4.2)。[覚醒, 睡眠]
+function paceFromUrl() {
+  const v = Number(new URLSearchParams(location.search).get('pace'));
+  return Number.isFinite(v) && v > 0 ? v : null;
+}
+
+export const SECOND = 1000;
+export const MINUTE = 60 * SECOND;
+export const HOUR = 60 * MINUTE;
+
+// 1倍速の「毎時の増減」を PACE 倍にする(ゲージ減衰は浮動小数のまま計算する)
+export function pacedRate(perHour) {
+  return perHour * PACE;
+}
+// 1倍速で「base 分」の時間を PACE で縮めて ms で返す。0 分にならないよう最低 1 分(§1.4)
+export function pacedMinutes(base) {
+  return Math.max(1, Math.floor(base / PACE)) * MINUTE;
+}
+
+export const MAX_OFFLINE_MS = 24 * HOUR; // オフライン補正の上限(§4.3)。実時間のまま変えない
+const STEP_MS = 15 * SECOND;             // 一括計算の刻み幅(反映をなめらかにするため 1分 → 15秒)
+
+// 1時間あたりの増減(§4.2 の1倍速の値 × PACE)。[覚醒, 睡眠]
 const RATES = {
-  hunger: [-8, -3],
-  happiness: [-5, -2],
-  cleanliness: [-4, -1],
-  energy: [-6, 12]
+  hunger: [pacedRate(-8), pacedRate(-3)],
+  happiness: [pacedRate(-5), pacedRate(-2)],
+  cleanliness: [pacedRate(-4), pacedRate(-1)],
+  energy: [pacedRate(-6), pacedRate(12)]
 };
-const POOP_CLEAN_PENALTY = -8;   // うんちがある間の追加減衰/時
+const POOP_CLEAN_PENALTY = pacedRate(-8); // うんちがある間の追加減衰/時
 const SICK_ENERGY_PENALTY = -10; // 病気中の追加減衰/時
 const SICK_CHANCE_PER_10MIN = 0.15;
 const HUNGER_ZERO_SICK_MS = 1 * HOUR;
