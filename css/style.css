@@ -846,3 +846,14 @@ html, body {
 .shop-item-price { display: flex; align-items: center; gap: 2px; font-weight: bold; font-variant-numeric: tabular-nums; }
 .shop-price-coin { height: 18px; }
 .shop-buy { flex: none; margin: 0; min-width: 0; padding: 8px 14px; } /* 説明文の幅を残す */
+
+/* ===== もちもの(じょうたい画面の下) ===== */
+.items { margin-top: 12px; padding-top: 8px; border-top: 2px dashed var(--btn-border); }
+.items-title { margin: 0 0 6px; font-size: 16px; text-align: center; }
+.items-slow { margin: 0 0 6px; font-size: 12px; font-weight: bold; text-align: center; }
+.items-empty { margin: 0; font-size: 13px; color: var(--text-sub); text-align: center; }
+.items-row { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
+.items-img { height: 40px; flex: none; } /* 高さのみ指定 */
+.items-name { flex: 1; min-width: 0; font-size: 14px; }
+.items-count { flex: none; font-variant-numeric: tabular-nums; }
+.items-use { flex: none; margin: 0; min-width: 0; padding: 6px 12px; font-size: 14px; }

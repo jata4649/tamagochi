@@ -2,6 +2,7 @@
 import { UI } from './strings.js';
 import { assetPath } from './assets.js';
 import { ageParts } from './state.js';
+import { itemsSection } from './items.js';
 
 const $ = (id) => document.getElementById(id);
 
@@ -117,6 +118,14 @@ export function openStatus(game) {
   root.appendChild(row(UI.poopLabel, UI.countFormat(f.poops)));
   root.appendChild(row(UI.miniGameLabel, UI.hitsFormat(f.miniGameHigh)));
   root.appendChild(el('p', 'status-note', UI.snackLimitText));
+  // もちもの(アルバイト&ショップ §4.3)。使ったら数値が見えるよう、同じ位置のまま描き直す
+  root.appendChild(itemsSection(game, () => {
+    const top = document.querySelector('#overlay .overlay-panel')?.scrollTop ?? 0;
+    game.render();
+    openStatus(game);
+    const panel = document.querySelector('#overlay .overlay-panel');
+    if (panel) panel.scrollTop = top;
+  }));
   root.appendChild(backButton(() => closeOverlay(game)));
   openOverlay(game, 'status', root);
 }
