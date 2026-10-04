@@ -681,3 +681,51 @@ html, body {
   animation: blink 0.6s ease-in-out infinite alternate;
 }
 .result-note { min-height: 1.3em; margin: 6px 0 0; font-size: 12px; color: var(--text-sub); }
+
+/* ===== もぐらたたき(3×3) ===== */
+.mole-field {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin: auto 0;           /* 縦の真ん中に置く */
+  padding: 8px 0;
+}
+.mole-cell {
+  position: relative;
+  aspect-ratio: 1 / 1;
+}
+.mole-hole, .mole-mole, .mole-mallet {
+  position: absolute;
+  left: 50%;
+  width: 100%;              /* 幅のみ指定(正方形の素材なので等比) */
+  transform: translateX(-50%);
+}
+.mole-hole { bottom: 0; }
+.mole-mole {
+  bottom: 10%;
+  opacity: 0;
+  transform: translate(-50%, 30%) scale(0.85);
+  transition: opacity 0.08s, transform 0.12s ease-out;
+  pointer-events: none;     /* 引っ込んでいる間はたたけない */
+  touch-action: none;
+}
+.mole-mole.up {
+  opacity: 1;
+  transform: translate(-50%, 0) scale(1);
+  pointer-events: auto;
+  cursor: pointer;
+}
+.mole-mallet {
+  top: -10%;
+  width: 70%;
+  left: 70%;
+  opacity: 0;
+  transform: translateX(-50%) rotate(-30deg);
+  transform-origin: 80% 90%;
+}
+.mole-mallet.show { animation: mallet-hit 0.3s ease-out both; }
+@keyframes mallet-hit {
+  0%   { opacity: 1; transform: translateX(-50%) rotate(-30deg); }
+  40%  { opacity: 1; transform: translateX(-50%) rotate(25deg); }
+  100% { opacity: 0; transform: translateX(-50%) rotate(25deg); }
+}

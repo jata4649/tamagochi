@@ -53,7 +53,9 @@ export function createRun() {
     },
 
     // requestAnimationFrame のループ。fn(dt ミリ秒) が false を返すと止まる
-    // 画面が隠れている間は rAF が止まるので、戻ったときの dt は最大 100ms に抑える
+    // 画面が隠れている間はゲーム内時間を進めない(dt = 0)。
+    // 普通は隠れると rAF 自体が止まるが、止まらない環境でも時間が飛ばないようにする。
+    // 戻ったときの dt も最大 100ms に抑える
     loop(fn) {
       if (!alive) return;
       let last = performance.now();
@@ -61,7 +63,7 @@ export function createRun() {
         frames.delete(handle);
         gameDebug.live--;
         if (!alive) return;
-        const dt = Math.min(100, now - last);
+        const dt = document.visibilityState === 'hidden' ? 0 : Math.min(100, now - last);
         last = now;
         if (fn(dt) === false) return;
         handle = requestAnimationFrame(tick);
