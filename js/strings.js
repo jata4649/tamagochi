@@ -100,3 +100,27 @@ UI.games = {
   scoreLabel: "スコア",
   labelValue: (label, v) => `${label}: ${v}`
 };
+
+// アルバイト & ショップ(追加仕様「tamagotchi_addon_jobs_shop_spec_claude.md」§5)。既存の文言は変更しない
+UI.coinName = "ドッチ";
+UI.jobs = { paid: "アルバイト りょう: {n}ドッチ" };
+UI.shop = {
+  open: "おみせへ", title: "おみせ", buy: "かう",
+  notEnough: "ドッチが足りないよ", bought: "かった! もちものに入ったよ",
+  itemsTitle: "もちもの", use: "つかう",
+  cannotUseNow: "いまは 使えないよ",
+  slowActive: "スロウ砂時計中: ゲージの減りが半分",
+  effectText: {
+    item_bento: "おなか まんたんに!", item_funbox: "きげん まんたんに!",
+    item_soapset: "せいけつ まんたんに!", item_vitamin: "げんき まんたんに!",
+    item_medherb: "びょうきが なおる!", item_slowglass: "12じかん ゲージの減り半分"
+  }
+};
+UI.itemNames = {
+  item_bento: "特製べんとう", item_funbox: "たのしいBOX", item_soapset: "シャンプーセット",
+  item_vitamin: "げんきドリンク", item_medherb: "特効やくそう", item_slowglass: "スロウ砂時計"
+};
+// --- 以下は追加仕様に無いため追加した文言(README「仕様メモ」参照) ---
+UI.coinFormat = (n) => `${n}${UI.coinName}`;   // 「300ドッチ」の形(§2.1)
+UI.shop.slowRemain = (h) => `あと${h}時間`;      // スロウ砂時計の残り(§4.3「あと○時間」)
+UI.shop.empty = "まだ なにも もっていないよ";

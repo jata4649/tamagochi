@@ -34,13 +34,13 @@ function add(state, key, v) {
 }
 
 // 食事成功の POOP_MIN_MS〜POOP_MAX_MS 後にうんちを予約(予約済みなら上書きしない)
-function schedulePoop(state, now) {
+export function schedulePoop(state, now) {
   if (state.flags.pendingPoopAt !== null) return;
   state.flags.pendingPoopAt = now + POOP_MIN_MS + Math.random() * (POOP_MAX_MS - POOP_MIN_MS);
 }
 
 // アクション演出(*_eat など)を 2.5 秒表示
-function playAnim(game, anim) {
+export function playAnim(game, anim) {
   game.runtime.anim = anim;
   game.runtime.animUntil = Date.now() + ANIM_MS;
 }

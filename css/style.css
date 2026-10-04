@@ -769,3 +769,91 @@ html, body {
   from { top: 0; }
   to   { top: calc(100% + 60px); }
 }
+
+/* ===== アルバイト&ショップ: 上部バーの所持ドッチ(タップでおみせ) ===== */
+.coin-chip {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: none;
+  padding: 2px 8px 2px 4px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: bold;
+  color: var(--text);
+  background: var(--btn-bg);
+  border: 2px solid var(--btn-border);
+  border-radius: 999px;
+  cursor: pointer;
+}
+.coin-chip img { height: 24px; } /* 高さのみ指定 */
+.coin-chip.closed { opacity: 0.5; } /* ゲーム中・睡眠中・病気中は入口を閉じる */
+.coin-chip span { font-variant-numeric: tabular-nums; }
+
+/* おみせの見出し */
+.shop-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.shop-head .overlay-title { margin: 0; flex: 1; text-align: left; }
+.shop-head-icon { height: 48px; }
+.shop-purse {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-weight: bold;
+  font-variant-numeric: tabular-nums;
+}
+.shop-purse-icon { height: 28px; }
+/* チップを足した分、上部バーの名前・年齢は1行に収めて「…」で省略する */
+.pet-name, .pet-age { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.topbar { gap: 6px; }
+
+/* ===== アルバイト代(結果画面) ===== */
+.result-paid {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin: 8px 0 0;
+  font-weight: bold;
+}
+.result-coin { height: 32px; animation: coin-rise 1s ease-out both; } /* 1枚 軽く浮上 */
+@keyframes coin-rise {
+  0%   { opacity: 0; transform: translateY(12px); }
+  60%  { opacity: 1; transform: translateY(-6px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== おみせの売り物(1列のリスト。狭い画面でも文字が詰まらないように) ===== */
+.shop-grid { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
+.shop-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  background: var(--btn-bg);
+  border: 2px solid var(--btn-border);
+  border-radius: 12px;
+}
+.shop-item-img { height: 56px; flex: none; } /* 高さのみ指定 */
+.shop-item-info { flex: 1; min-width: 0; text-align: left; }
+.shop-item-info p { margin: 0; }
+.shop-item-name { font-weight: bold; }
+.shop-item-effect { font-size: 12px; }
+.shop-item-price { display: flex; align-items: center; gap: 2px; font-weight: bold; font-variant-numeric: tabular-nums; }
+.shop-price-coin { height: 18px; }
+.shop-buy { flex: none; margin: 0; min-width: 0; padding: 8px 14px; } /* 説明文の幅を残す */
+
+/* ===== もちもの(じょうたい画面の下) ===== */
+.items { margin-top: 12px; padding-top: 8px; border-top: 2px dashed var(--btn-border); }
+.items-title { margin: 0 0 6px; font-size: 16px; text-align: center; }
+.items-slow { margin: 0 0 6px; font-size: 12px; font-weight: bold; text-align: center; }
+.items-empty { margin: 0; font-size: 13px; color: var(--text-sub); text-align: center; }
+.items-row { display: flex; align-items: center; gap: 8px; margin: 4px 0; }
+.items-img { height: 40px; flex: none; } /* 高さのみ指定 */
+.items-name { flex: 1; min-width: 0; font-size: 14px; }
+.items-count { flex: none; font-variant-numeric: tabular-nums; }
+.items-use { flex: none; margin: 0; min-width: 0; padding: 6px 12px; font-size: 14px; }

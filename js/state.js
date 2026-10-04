@@ -1,5 +1,6 @@
 // セーブデータの形・ゲージ更新・状態判定(仕様書 §4.2〜§4.4・§4.6・§6)
 import { checkEvolution, checkGone } from './lifecycle.js';
+import { ITEM_IDS } from './economy.js';
 
 // 追加仕様 §2.3: ミニゲームの成績(games ブロック)を足して version 2 にした
 export const SAVE_VERSION = 2;
@@ -24,7 +25,6 @@ function paceFromUrl() {
 export const SECOND = 1000;
 export const MINUTE = 60 * SECOND;
 export const HOUR = 60 * MINUTE;
-
 // 1倍速の「毎時の増減」× PACE(浮動小数のまま) / 1倍速の「base 分」÷ PACE を ms で(最低1分・§1.4)
 export const pacedRate = (perHour) => perHour * PACE;
 export const pacedMinutes = (base) => Math.max(1, Math.floor(base / PACE)) * MINUTE;
@@ -65,9 +65,12 @@ export function createState(colorway = 'a', name = '', now = Date.now()) {
       zeroHungerSince: null, zeroHappySince: null,
       snacksCount: 0, snacksWindowStart: 0,
       pendingPoopAt: null, miniGameHigh: 0,
-      gone: false
+      gone: false, coinScale10: true // 新しいセーブは最初から新レート(桁合わせ不要)
     },
-    games: createGames()
+    games: createGames(),
+    coins: 0, // ↓3つはアルバイト&ショップ追加仕様 §2(v2 のまま後付け)
+    inventory: Object.fromEntries(ITEM_IDS.map((id) => [id, 0])),
+    slowGlassUntil: null
   };
 }
 
@@ -111,10 +114,11 @@ function step(state, dt, t) {
   const f = state.flags;
   const h = dt / HOUR;
   const idx = f.sleeping ? 1 : 0;
-
-  for (const key of Object.keys(RATES)) g[key] += RATES[key][idx] * h;
-  if (f.poops > 0) g.cleanliness += POOP_CLEAN_PENALTY * h;
-  if (f.sick) g.energy += SICK_ENERGY_PENALTY * h;
+  // スロウ砂時計の効果中(t < slowGlassUntil)は減り(マイナス)だけ半分。回復・進化・イベントには触れない
+  const r = (v) => v * h * (v < 0 && t < (state.slowGlassUntil ?? 0) ? 0.5 : 1);
+  for (const key of Object.keys(RATES)) g[key] += r(RATES[key][idx]);
+  if (f.poops > 0) g.cleanliness += r(POOP_CLEAN_PENALTY);
+  if (f.sick) g.energy += r(SICK_ENERGY_PENALTY);
   for (const key of Object.keys(g)) g[key] = clamp(g[key]);
 
   // うんちの出現(食事の 15〜40 分後に予約されたもの)
