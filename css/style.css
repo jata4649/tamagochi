@@ -729,3 +729,43 @@ html, body {
   40%  { opacity: 1; transform: translateX(-50%) rotate(25deg); }
   100% { opacity: 0; transform: translateX(-50%) rotate(25deg); }
 }
+
+/* ===== おんぷキャッチ ===== */
+.catch-field {
+  position: relative;
+  flex: 1 1 auto;
+  margin-top: 8px;
+  min-height: 300px;
+  overflow: hidden;
+  cursor: pointer;
+}
+.catch-basket {
+  position: absolute;
+  bottom: 0;
+  height: 96px;              /* 約96px・高さのみ指定 */
+  transform: translateX(-50%);
+  transition: left 0.12s ease-out;
+}
+.catch-basket.shake { animation: basket-shake 0.4s linear; }
+@keyframes basket-shake {
+  0%, 100% { transform: translateX(-50%); }
+  20%      { transform: translateX(-62%) rotate(-6deg); }
+  40%      { transform: translateX(-38%) rotate(6deg); }
+  60%      { transform: translateX(-60%) rotate(-4deg); }
+  80%      { transform: translateX(-42%) rotate(4deg); }
+}
+.catch-drop {
+  position: absolute;
+  top: 0;
+  height: 56px;              /* 既存の小物を CSS で縮小して流用(ファイルは複製しない) */
+  transform: translate(-50%, -100%);
+  animation-name: drop-fall;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+.catch-drop.drop-star { height: 60px; }
+.catch-field.paused .catch-drop { animation-play-state: paused; }
+@keyframes drop-fall {
+  from { top: 0; }
+  to   { top: calc(100% + 60px); }
+}
