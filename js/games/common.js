@@ -5,6 +5,7 @@
 import { UI } from '../strings.js';
 import { showToast } from '../ui.js';
 import { el, spriteImg, openOverlay } from '../overlays.js';
+import { PACE, SECOND } from '../state.js';
 
 export const ENERGY_COST = 5;   // 1プレイで げんき −5
 export const HAPPY_MAX = 15;    // 1プレイの きげん 増加の上限
@@ -105,7 +106,8 @@ export function createRun() {
 
 // 休憩中のゲーム(id → 再開できる時刻)。追加仕様 §2.4 の「同じゲームは3分間 再開不可」
 const cooldownUntil = new Map();
-export const COOLDOWN_MS = 3 * 60 * 1000;
+// 1倍速 180秒 ÷ PACE(最低30秒)。PACE=3 で 1分
+export const COOLDOWN_MS = Math.max(30, 180 / PACE) * SECOND;
 
 export function isCoolingDown(id, now = Date.now()) {
   return (cooldownUntil.get(id) ?? 0) > now;

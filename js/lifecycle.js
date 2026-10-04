@@ -1,7 +1,7 @@
 // ライフサイクル: 孵化・進化・お別れの判定(仕様書 §4.1・§4.6)
-
-const MINUTE = 60 * 1000;
-const HOUR = 60 * MINUTE;
+// 時間は「1倍速の分数」で持ち、state.js の pacedMinutes() で PACE に合わせて縮める
+// (state.js とは互いに import し合うので、PACE を使うのは関数の中だけにしている)
+import { pacedMinutes } from './state.js';
 
 // 進化スピード(§4.1)。DEMO = 1 / REALISTIC = 0.1。初期値は DEMO
 export const TIME_SCALE = { DEMO: 1, REALISTIC: 0.1 };
@@ -9,19 +9,22 @@ let timeScale = TIME_SCALE.DEMO;
 export function setTimeScale(v) { timeScale = v; }
 export function getTimeScale() { return timeScale; }
 
-// 各段階にとどまる時間(§4.1 の表をそのまま。モードごとに定義)
-const STAGE_DURATIONS = {
-  [TIME_SCALE.DEMO]:      { egg: 3 * MINUTE, baby: 3 * HOUR,  child: 6 * HOUR },
-  [TIME_SCALE.REALISTIC]: { egg: 1 * HOUR,   baby: 24 * HOUR, child: 48 * HOUR }
+// 各段階にとどまる時間(§4.1 の表の1倍速の値・分。モードごとに定義)
+// PACE=3 なら デモ速: たまご 1分 / ベビー 1時間 / こども 2時間、リアル: 20分 / 8時間 / 16時間
+const STAGE_BASE_MIN = {
+  [TIME_SCALE.DEMO]:      { egg: 3,  baby: 3 * 60,  child: 6 * 60 },
+  [TIME_SCALE.REALISTIC]: { egg: 60, baby: 24 * 60, child: 48 * 60 }
 };
 const NEXT_STAGE = { egg: 'baby', baby: 'child', child: 'adult' };
 
-// お別れ条件(§4.6)。おなか0 は デモ速 2時間(リアルは ÷TIME_SCALE で 20時間)
-const STARVE_MS_DEMO = 2 * HOUR;
-const UNHAPPY_MS = 24 * HOUR;
+// お別れ条件(§4.6 の1倍速の値・分)。おなか0 は デモ速 2時間(リアルは ÷TIME_SCALE で 20時間)
+// PACE=3 なら おなか0 が 40分 / きげん0 が 8時間
+const STARVE_BASE_MIN_DEMO = 2 * 60;
+const UNHAPPY_BASE_MIN = 24 * 60;
 
 export function stageDuration(stage) {
-  return STAGE_DURATIONS[timeScale][stage] ?? Infinity;
+  const base = STAGE_BASE_MIN[timeScale][stage];
+  return base === undefined ? Infinity : pacedMinutes(base);
 }
 
 // 孵化までの残りミリ秒
@@ -50,9 +53,9 @@ function hatch(state, at) {
 // お別れ判定。満たしたら即確定(演出なし)
 export function checkGone(state, t, events) {
   const f = state.flags;
-  const starveMs = STARVE_MS_DEMO / timeScale;
+  const starveMs = pacedMinutes(STARVE_BASE_MIN_DEMO / timeScale);
   const starved = f.zeroHungerSince !== null && t - f.zeroHungerSince >= starveMs;
-  const unhappy = f.zeroHappySince !== null && t - f.zeroHappySince >= UNHAPPY_MS;
+  const unhappy = f.zeroHappySince !== null && t - f.zeroHappySince >= pacedMinutes(UNHAPPY_BASE_MIN);
   if (starved || unhappy) {
     f.gone = true;
     f.sleeping = false;

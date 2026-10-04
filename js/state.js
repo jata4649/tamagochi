@@ -41,9 +41,10 @@ const RATES = {
   energy: [pacedRate(-6), pacedRate(12)]
 };
 const POOP_CLEAN_PENALTY = pacedRate(-8); // うんちがある間の追加減衰/時
-const SICK_ENERGY_PENALTY = -10; // 病気中の追加減衰/時
-const SICK_CHANCE_PER_10MIN = 0.15;
-const HUNGER_ZERO_SICK_MS = 1 * HOUR;
+const SICK_ENERGY_PENALTY = pacedRate(-10); // 病気中の げんき 追加減衰/時(PACE=3 で −30)
+const SICK_CHANCE = 0.15;                    // 発病 (a) の確率(1回の判定あたり)
+const SICK_ROLL_MS = pacedMinutes(10);       // 発病 (a) の判定間隔(PACE=3 で 3分ごと)
+const HUNGER_ZERO_SICK_MS = pacedMinutes(60); // 発病 (b): おなか0 が続く時間(PACE=3 で 20分)
 export const MAX_POOPS = 2;
 export const LOW = 30; // これ未満で「低い」扱い(alert・sad)
 
@@ -130,7 +131,7 @@ function step(state, dt, t) {
   // 発病判定(§4.6)
   if (!f.sick) {
     const dirty = f.poops > 0 && g.cleanliness < LOW;
-    const pChance = 1 - Math.pow(1 - SICK_CHANCE_PER_10MIN, dt / (10 * MINUTE));
+    const pChance = 1 - Math.pow(1 - SICK_CHANCE, dt / SICK_ROLL_MS);
     if (dirty && Math.random() < pChance) f.sick = true;
     if (f.zeroHungerSince !== null && t - f.zeroHungerSince >= HUNGER_ZERO_SICK_MS) f.sick = true;
   }

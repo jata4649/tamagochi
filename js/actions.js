@@ -5,12 +5,13 @@ import { spawnFx, fadeOutPoops } from './effects.js';
 import { openMealMenu, openStatus } from './overlays.js';
 import { openGameSelect } from './games/select.js';
 import { beep } from './sound.js';
+import { pacedMinutes } from './state.js';
 
-const HOUR = 60 * 60 * 1000;
-const MINUTE = 60 * 1000;
 export const ANIM_MS = 2500;       // アクション演出の長さ(§4.4)
 const BATH_MS = 3000;              // おふろ演出の長さ(§4.5)
-const SNACK_WINDOW_MS = 6 * HOUR;  // おやつ回数制限の窓
+const SNACK_WINDOW_MS = pacedMinutes(6 * 60); // おやつ回数制限の窓(1倍速 6時間、PACE=3 で 2時間)
+const POOP_MIN_MS = pacedMinutes(15);          // うんちが出るまで(1倍速 15〜40分、PACE=3 で 5〜13分)
+const POOP_MAX_MS = pacedMinutes(40);
 const SNACK_MAX = 3;
 
 // 食材(§5.3)。ごはん系は おなか+25 / きげん+3、飲みものは おなか+3 / げんき+5
@@ -32,11 +33,10 @@ function add(state, key, v) {
   state.gauges[key] = Math.max(0, Math.min(100, state.gauges[key] + v));
 }
 
-// 食事成功の 15〜40 分後にうんちを予約(予約済みなら上書きしない)
+// 食事成功の POOP_MIN_MS〜POOP_MAX_MS 後にうんちを予約(予約済みなら上書きしない)
 function schedulePoop(state, now) {
   if (state.flags.pendingPoopAt !== null) return;
-  const min = 15 + Math.random() * 25;
-  state.flags.pendingPoopAt = now + min * MINUTE;
+  state.flags.pendingPoopAt = now + POOP_MIN_MS + Math.random() * (POOP_MAX_MS - POOP_MIN_MS);
 }
 
 // アクション演出(*_eat など)を 2.5 秒表示
