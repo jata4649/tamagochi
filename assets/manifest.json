@@ -1,0 +1,388 @@
+{
+  "pack": "tamagotchi_style_asset_pack",
+  "style": "16-bit handheld console pixel art",
+  "model": "gpt-image-2",
+  "sprite_format": "512x512 RGBA transparent; pets bottom-anchored (ground line 24px above bottom), items centered",
+  "backgrounds": "1024x1024, no alpha, use as cover",
+  "assets": 54,
+  "items": [
+    {
+      "file": "sprites/pet_egg.png",
+      "category": "sprite",
+      "ja": "たまご(Egg)",
+      "en": "pet egg",
+      "usage": "孵化前の状態・全キャラ共通"
+    },
+    {
+      "file": "sprites/pet_a_baby_idle.png",
+      "category": "sprite",
+      "ja": "ベビー標準(うす黄色)",
+      "en": "pet a_baby_idle",
+      "usage": "待機ポーズの基準画像"
+    },
+    {
+      "file": "sprites/pet_a_baby_sleep.png",
+      "category": "sprite",
+      "ja": "ベビー おねむ",
+      "en": "pet a_baby_sleep",
+      "usage": "睡眠中のベビー"
+    },
+    {
+      "file": "sprites/pet_a_child_idle.png",
+      "category": "sprite",
+      "ja": "こども標準",
+      "en": "pet a_child_idle",
+      "usage": "待機ポーズ"
+    },
+    {
+      "file": "sprites/pet_a_adult_idle.png",
+      "category": "sprite",
+      "ja": "おとな標準",
+      "en": "pet a_adult_idle",
+      "usage": "待機・状態参照の基準"
+    },
+    {
+      "file": "sprites/pet_a_adult_happy.png",
+      "category": "sprite",
+      "ja": "おとな うれしい",
+      "en": "pet a_adult_happy",
+      "usage": "喜び・成功フィードバック"
+    },
+    {
+      "file": "sprites/pet_a_adult_sad.png",
+      "category": "sprite",
+      "ja": "おとな かなしい",
+      "en": "pet a_adult_sad",
+      "usage": "空腹・放置・失敗時"
+    },
+    {
+      "file": "sprites/pet_a_adult_sleep.png",
+      "category": "sprite",
+      "ja": "おとな おねむ",
+      "en": "pet a_adult_sleep",
+      "usage": "睡眠中(夜)"
+    },
+    {
+      "file": "sprites/pet_a_adult_eat.png",
+      "category": "sprite",
+      "ja": "おとな たべる",
+      "en": "pet a_adult_eat",
+      "usage": "食事アクション中"
+    },
+    {
+      "file": "sprites/pet_a_adult_sick.png",
+      "category": "sprite",
+      "ja": "おとな びょうき",
+      "en": "pet a_adult_sick",
+      "usage": "ゲージ低下・不調"
+    },
+    {
+      "file": "sprites/pet_a_adult_play.png",
+      "category": "sprite",
+      "ja": "おとな 遊び中",
+      "en": "pet a_adult_play",
+      "usage": "ミニゲーム・遊び中"
+    },
+    {
+      "file": "sprites/pet_a_adult_dirty.png",
+      "category": "sprite",
+      "ja": "おとな きたない",
+      "en": "pet a_adult_dirty",
+      "usage": "汚れ・掃除要求"
+    },
+    {
+      "file": "sprites/pet_a_adult_angel.png",
+      "category": "sprite",
+      "ja": "おとな お別れ(天使)",
+      "en": "pet a_adult_angel",
+      "usage": "寿命・お別れ演出"
+    },
+    {
+      "file": "sprites/pet_b_baby_idle.png",
+      "category": "sprite",
+      "ja": "緑カラーベビー",
+      "en": "pet b_baby_idle",
+      "usage": "色違いバリエーション"
+    },
+    {
+      "file": "sprites/pet_b_child_idle.png",
+      "category": "sprite",
+      "ja": "緑カラーこども",
+      "en": "pet b_child_idle",
+      "usage": "色違いバリエーション"
+    },
+    {
+      "file": "sprites/pet_b_adult_idle.png",
+      "category": "sprite",
+      "ja": "緑カラーおとな",
+      "en": "pet b_adult_idle",
+      "usage": "色違いバリエーション"
+    },
+    {
+      "file": "sprites/pet_c_baby_idle.png",
+      "category": "sprite",
+      "ja": "ピンクカラーベビー",
+      "en": "pet c_baby_idle",
+      "usage": "色違いバリエーション"
+    },
+    {
+      "file": "sprites/pet_c_child_idle.png",
+      "category": "sprite",
+      "ja": "ピンクカラーこども",
+      "en": "pet c_child_idle",
+      "usage": "色違いバリエーション"
+    },
+    {
+      "file": "sprites/pet_c_adult_idle.png",
+      "category": "sprite",
+      "ja": "ピンクカラーおとな",
+      "en": "pet c_adult_idle",
+      "usage": "色違いバリエーション"
+    },
+    {
+      "file": "icons/icon_meal.png",
+      "category": "icon",
+      "ja": "ごはん",
+      "en": "icon_meal",
+      "usage": "食事メニューを開く"
+    },
+    {
+      "file": "icons/icon_snack.png",
+      "category": "icon",
+      "ja": "おやつ",
+      "en": "icon_snack",
+      "usage": "おやつメニューを開く"
+    },
+    {
+      "file": "icons/icon_play.png",
+      "category": "icon",
+      "ja": "遊び",
+      "en": "icon_play",
+      "usage": "ミニゲーム開始"
+    },
+    {
+      "file": "icons/icon_bath.png",
+      "category": "icon",
+      "ja": "おふろ",
+      "en": "icon_bath",
+      "usage": "入浴・掃除"
+    },
+    {
+      "file": "icons/icon_toilet.png",
+      "category": "icon",
+      "ja": "トイレ",
+      "en": "icon_toilet",
+      "usage": "トイレ介助"
+    },
+    {
+      "file": "icons/icon_sleep.png",
+      "category": "icon",
+      "ja": "おやすみ",
+      "en": "icon_sleep",
+      "usage": "電気を消す・睡眠"
+    },
+    {
+      "file": "icons/icon_medicine.png",
+      "category": "icon",
+      "ja": "くすり",
+      "en": "icon_medicine",
+      "usage": "病気治療"
+    },
+    {
+      "file": "icons/icon_status.png",
+      "category": "icon",
+      "ja": "ステータス",
+      "en": "icon_status",
+      "usage": "状態一覧を開く"
+    },
+    {
+      "file": "icons/icon_alert.png",
+      "category": "icon",
+      "ja": "注意",
+      "en": "icon_alert",
+      "usage": "お世話が必要な通知"
+    },
+    {
+      "file": "icons/icon_heart.png",
+      "category": "icon",
+      "ja": "ハート",
+      "en": "icon_heart",
+      "usage": "親愛度・ゲージ表示"
+    },
+    {
+      "file": "icons/icon_settings.png",
+      "category": "icon",
+      "ja": "設定",
+      "en": "icon_settings",
+      "usage": "設定画面を開く"
+    },
+    {
+      "file": "icons/icon_light.png",
+      "category": "icon",
+      "ja": "でんき",
+      "en": "icon_light",
+      "usage": "電気表示・ON状態"
+    },
+    {
+      "file": "foods/food_onigiri.png",
+      "category": "food",
+      "ja": "おにぎり",
+      "en": "onigiri",
+      "usage": "餌・おやつ・水分の供給"
+    },
+    {
+      "file": "foods/food_bread.png",
+      "category": "food",
+      "ja": "パン",
+      "en": "bread",
+      "usage": "餌・おやつ・水分の供給"
+    },
+    {
+      "file": "foods/food_burger.png",
+      "category": "food",
+      "ja": "ハンバーガー",
+      "en": "burger",
+      "usage": "餌・おやつ・水分の供給"
+    },
+    {
+      "file": "foods/food_cake.png",
+      "category": "food",
+      "ja": "ケーキ",
+      "en": "cake",
+      "usage": "餌・おやつ・水分の供給"
+    },
+    {
+      "file": "foods/food_apple.png",
+      "category": "food",
+      "ja": "りんご",
+      "en": "apple",
+      "usage": "餌・おやつ・水分の供給"
+    },
+    {
+      "file": "foods/food_chips.png",
+      "category": "food",
+      "ja": "ポテトチップス",
+      "en": "chips",
+      "usage": "餌・おやつ・水分の供給"
+    },
+    {
+      "file": "foods/food_ricebowl.png",
+      "category": "food",
+      "ja": "ごはん茶碗",
+      "en": "ricebowl",
+      "usage": "餌・おやつ・水分の供給"
+    },
+    {
+      "file": "foods/food_banana.png",
+      "category": "food",
+      "ja": "バナナ",
+      "en": "banana",
+      "usage": "餌・おやつ・水分の供給"
+    },
+    {
+      "file": "foods/food_icecream.png",
+      "category": "food",
+      "ja": "アイスクリーム",
+      "en": "icecream",
+      "usage": "餌・おやつ・水分の供給"
+    },
+    {
+      "file": "foods/food_cookie.png",
+      "category": "food",
+      "ja": "クッキー",
+      "en": "cookie",
+      "usage": "餌・おやつ・水分の供給"
+    },
+    {
+      "file": "foods/food_water.png",
+      "category": "food",
+      "ja": "水",
+      "en": "water",
+      "usage": "餌・おやつ・水分の供給"
+    },
+    {
+      "file": "foods/food_juice.png",
+      "category": "food",
+      "ja": "ジュース",
+      "en": "juice",
+      "usage": "餌・おやつ・水分の供給"
+    },
+    {
+      "file": "props/prop_ball.png",
+      "category": "prop",
+      "ja": "ボール",
+      "en": "ball",
+      "usage": "遊びの演出"
+    },
+    {
+      "file": "props/prop_bear.png",
+      "category": "prop",
+      "ja": "くま",
+      "en": "bear",
+      "usage": "プレゼント・お気に入り"
+    },
+    {
+      "file": "props/prop_poop.png",
+      "category": "prop",
+      "ja": "うんち",
+      "en": "poop",
+      "usage": "掃除対象の表示"
+    },
+    {
+      "file": "props/prop_zzz.png",
+      "category": "prop",
+      "ja": "Zzz",
+      "en": "zzz",
+      "usage": "睡眠エフェクト"
+    },
+    {
+      "file": "props/prop_heart.png",
+      "category": "prop",
+      "ja": "ハート(小)",
+      "en": "heart",
+      "usage": "親愛度ポップ"
+    },
+    {
+      "file": "props/prop_star.png",
+      "category": "prop",
+      "ja": "星",
+      "en": "star",
+      "usage": "成功演出"
+    },
+    {
+      "file": "props/prop_sparkle.png",
+      "category": "prop",
+      "ja": "キラキラ",
+      "en": "sparkle",
+      "usage": "輝き演出"
+    },
+    {
+      "file": "props/prop_note.png",
+      "category": "prop",
+      "ja": "音符",
+      "en": "note",
+      "usage": "遊び・音楽演出"
+    },
+    {
+      "file": "bg/bg_day_room.png",
+      "category": "background",
+      "ja": "背景: day_room",
+      "en": "",
+      "usage": "画面背景(透過なし・coverで使用)"
+    },
+    {
+      "file": "bg/bg_night_room.png",
+      "category": "background",
+      "ja": "背景: night_room",
+      "en": "",
+      "usage": "画面背景(透過なし・coverで使用)"
+    },
+    {
+      "file": "bg/bg_park.png",
+      "category": "background",
+      "ja": "背景: park",
+      "en": "",
+      "usage": "画面背景(透過なし・coverで使用)"
+    }
+  ]
+}

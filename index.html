@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <!-- タイトル文字列は js/strings.js から設定する -->
+  <title></title>
+  <link rel="icon" href="assets/sprites/pet_egg.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- 画面はこの1枚のカード内で切り替える(文字は全て JS で辞書から差し込む) -->
+  <main id="app" class="card">
+    <!-- 上部バー -->
+    <header class="topbar">
+      <img id="alert-icon" class="sprite alert-icon" src="assets/icons/icon_alert.png" alt="">
+      <div class="topbar-info">
+        <span id="pet-name" class="pet-name"></span>
+        <span class="pet-age"><span id="age-label"></span> <span id="pet-age"></span></span>
+      </div>
+      <span id="clock" class="clock"></span>
+      <button id="settings-btn" class="settings-btn" type="button">
+        <img class="sprite" src="assets/icons/icon_settings.png" alt="">
+      </button>
+    </header>
+
+    <!-- ステージ(背景 + ペット + 演出) -->
+    <section id="stage" class="stage">
+      <div id="fx-layer" class="fx-layer"></div>
+      <div id="poop-layer" class="poop-layer"></div>
+      <img id="pet" class="sprite pet" src="assets/sprites/pet_a_adult_idle.png" alt="">
+    </section>
+
+    <!-- ゲージ4本 -->
+    <section id="gauges" class="gauges"></section>
+
+    <!-- アクションボタン 2行×4列 -->
+    <nav id="actions" class="actions"></nav>
+
+    <!-- ミニゲームのパネル(遊び中だけゲージとボタンの代わりに出す) -->
+    <section id="minigame" class="minigame" hidden></section>
+
+    <!-- オーバーレイ(食事選択・ステータスなど) -->
+    <div id="overlay" class="overlay"></div>
+
+    <!-- トースト(alert() の代わり) -->
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </main>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

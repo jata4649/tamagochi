@@ -1,0 +1,533 @@
+/* ===== 変数(色・サイズはここに集める) ===== */
+:root {
+  --bg-page: #fbeee0;
+  --card-bg: #fff8ef;
+  --card-border: #5a3d2b;
+  --text: #4a3426;
+  --text-sub: #8a6a55;
+  --bar-bg: #ffe9c9;
+  --gauge-track: #ead7c0;
+  --gauge-good: #6cc56c;
+  --gauge-mid: #f2c641;
+  --gauge-bad: #e5574f;
+  --btn-bg: #fff3df;
+  --btn-bg-active: #ffd9a8;
+  --btn-border: #c99a6e;
+  --toast-bg: rgba(74, 52, 38, 0.92);
+  --toast-text: #fff8ef;
+  --overlay-bg: rgba(74, 52, 38, 0.55);
+  --card-max: 480px;
+  --radius: 16px;
+  --font: "Hiragino Maru Gothic ProN", "Hiragino Sans", "Noto Sans JP", "Meiryo", system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg-page);
+  color: var(--text);
+  font-family: var(--font);
+  -webkit-text-size-adjust: 100%;
+}
+
+/* 画像は全て等比のみ + ドット絵をくっきり表示(仕様書 §2.2 ルール3・4) */
+.sprite {
+  image-rendering: pixelated;
+  -webkit-user-drag: none;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* ===== カード(PC では中央の最大 480px) ===== */
+.card {
+  position: relative;
+  width: 100%;
+  max-width: var(--card-max);
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  background: var(--card-bg);
+  overflow: hidden;
+}
+@media (min-width: 520px) {
+  .card {
+    min-height: auto;
+    margin: 24px auto;
+    border: 3px solid var(--card-border);
+    border-radius: var(--radius);
+    box-shadow: 0 6px 0 var(--card-border);
+  }
+}
+
+/* ===== 上部バー ===== */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--bar-bg);
+  border-bottom: 3px solid var(--card-border);
+}
+.alert-icon {
+  height: 36px; /* 高さのみ指定 → 幅は等比 */
+  flex: none;
+}
+.topbar-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+  min-width: 0;
+}
+.pet-name { font-weight: bold; font-size: 16px; }
+.pet-age { font-size: 12px; color: var(--text-sub); }
+.clock { font-size: 14px; font-variant-numeric: tabular-nums; }
+
+/* ===== ステージ ===== */
+.stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1330 / 1182; /* 背景画像の実寸比。cover なので多少ずれても歪まない */
+  flex: 1 0 auto;            /* スマホでは残りの高さいっぱいに伸ばす(左右が少し切れるだけで床の高さは保たれる) */
+  max-height: 62vh;          /* 伸ばしすぎてペットが大きくなりすぎないように */
+  background-image: url("../assets/bg/bg_day_room.png");
+  background-size: cover;      /* 引き伸ばし禁止(§2.2 ルール5) */
+  background-position: center;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  overflow: hidden;
+}
+/* ペット: 足元(画像下端から 24/512)を床のラインに合わせる */
+.pet {
+  position: absolute;
+  left: 50%;
+  bottom: 12%;
+  height: 58%;           /* 高さのみ指定 → 幅は等比 */
+  transform: translateX(-50%);
+  z-index: 2;
+}
+.fx-layer, .poop-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.fx-layer { z-index: 3; }
+.poop-layer { z-index: 1; }
+
+/* ===== ゲージ ===== */
+.gauges {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 14px;
+  padding: 10px 14px;
+  border-top: 3px solid var(--card-border);
+  border-bottom: 3px solid var(--card-border);
+  background: var(--bar-bg);
+}
+.gauge { display: flex; align-items: center; gap: 6px; font-size: 13px; }
+.gauge-label { width: 4.2em; flex: none; }
+.gauge-track {
+  flex: 1;
+  height: 12px;
+  background: var(--gauge-track);
+  border: 2px solid var(--card-border);
+  border-radius: 4px;
+  overflow: hidden;
+  image-rendering: pixelated;
+}
+.gauge-fill {
+  height: 100%;
+  width: 80%;
+  background: var(--gauge-good);
+  transition: width 0.4s steps(8), background-color 0.4s;
+}
+.gauge-fill.mid { background: var(--gauge-mid); }
+.gauge-fill.bad { background: var(--gauge-bad); }
+
+/* ===== アクションボタン 2行×4列 ===== */
+.actions {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding: 12px;
+}
+.action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 2px;
+  font: inherit;
+  font-size: 12px;
+  color: var(--text);
+  background: var(--btn-bg);
+  border: 2px solid var(--btn-border);
+  border-radius: 10px;
+  box-shadow: 0 3px 0 var(--btn-border);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.action-btn:active {
+  transform: translateY(3px);
+  box-shadow: none;
+  background: var(--btn-bg-active);
+}
+.action-btn:disabled { opacity: 0.45; cursor: default; }
+.action-btn img { height: 48px; } /* 高さのみ指定(素材 README 推奨 48〜96px) */
+
+/* ===== トースト ===== */
+.toast {
+  position: absolute;
+  left: 50%;
+  top: 64px;
+  transform: translate(-50%, -10px);
+  max-width: 90%;
+  padding: 8px 14px;
+  border-radius: 12px;
+  background: var(--toast-bg);
+  color: var(--toast-text);
+  font-size: 14px;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s;
+  z-index: 50;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* ===== M1: 背景の切替(画像は cover + center のまま) ===== */
+.stage.bg-night { background-image: url("../assets/bg/bg_night_room.png"); }
+.stage.bg-park  { background-image: url("../assets/bg/bg_park.png"); }
+
+/* ===== alert の点滅(opacity 0.3〜1.0 を1秒周期・§4.8) ===== */
+.alert-icon { visibility: hidden; }
+.alert-icon.blink {
+  visibility: visible;
+  animation: blink 1s ease-in-out infinite alternate;
+}
+@keyframes blink {
+  from { opacity: 1; }
+  to   { opacity: 0.3; }
+}
+
+/* ===== 床のうんち(床に固定・§5.4) ===== */
+.poop {
+  position: absolute;
+  bottom: 9%;
+  height: 20%; /* 高さのみ指定 */
+}
+.poop-0 { left: 6%; }
+.poop-1 { right: 6%; }
+
+/* ===== 演出の共通設定 ===== */
+.fx, .fx-loop { position: absolute; }
+
+/* 睡眠の zzz: ペットの頭上へふわっと浮かぶのを繰り返す */
+.zzz {
+  left: 58%;
+  top: 18%;
+  height: 18%;
+  animation: zzz-float 2.4s ease-out infinite;
+}
+@keyframes zzz-float {
+  0%   { transform: translate(0, 20%) scale(0.6); opacity: 0; }
+  25%  { opacity: 1; }
+  100% { transform: translate(25%, -60%) scale(1); opacity: 0; }
+}
+
+/* B/C の病気表示(状態絵が無いための補助): くすりアイコンが頭の横で揺れる */
+.sick-badge {
+  left: 64%;
+  top: 22%;
+  height: 16%;
+  animation: wobble 1.2s ease-in-out infinite;
+}
+@keyframes wobble {
+  0%, 100% { transform: rotate(-12deg); }
+  50%      { transform: rotate(12deg); }
+}
+
+/* ===== M2: ボタンの状態 ===== */
+.action-btn.locked { opacity: 0.45; }
+[hidden] { display: none !important; }
+
+/* 丸ボタン(もどる・みぎ/ひだり など) */
+.pill-btn {
+  display: block;
+  margin: 12px auto 0;
+  min-width: 120px;
+  padding: 10px 18px;
+  font: inherit;
+  font-size: 15px;
+  color: var(--text);
+  background: var(--btn-bg);
+  border: 2px solid var(--btn-border);
+  border-radius: 999px;
+  box-shadow: 0 3px 0 var(--btn-border);
+  cursor: pointer;
+}
+.pill-btn:active { transform: translateY(3px); box-shadow: none; }
+.pill-btn:disabled { opacity: 0.45; cursor: default; }
+
+/* ===== オーバーレイ ===== */
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  background: var(--overlay-bg);
+  z-index: 40;
+}
+.overlay.show { display: flex; }
+.overlay-panel {
+  width: 100%;
+  max-height: 100%;
+  overflow-y: auto;
+  padding: 14px;
+  background: var(--card-bg);
+  border: 3px solid var(--card-border);
+  border-radius: var(--radius);
+}
+.overlay-title { margin: 0 0 10px; font-size: 18px; text-align: center; }
+
+/* 食事選択: 3列×4行 */
+.meal-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.food-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4px 2px 6px;
+  font: inherit;
+  color: var(--text);
+  background: var(--btn-bg);
+  border: 2px solid var(--btn-border);
+  border-radius: 10px;
+  cursor: pointer;
+}
+.food-btn:active { background: var(--btn-bg-active); }
+.food-btn img { height: 52px; } /* 高さのみ指定 */
+.food-name { font-size: 12px; font-weight: bold; }
+.food-effect { font-size: 10px; color: var(--text-sub); }
+
+/* ステータス */
+.status-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  border-bottom: 1px dashed var(--gauge-track);
+  font-size: 14px;
+}
+.status-label { min-width: 5em; flex: none; white-space: nowrap; color: var(--text-sub); }
+.status-row .gauge-track { flex: 1; }
+.status-value { flex: 1; text-align: right; }
+.status-num { width: 2.2em; text-align: right; font-variant-numeric: tabular-nums; }
+.status-note { margin: 10px 0 0; font-size: 12px; color: var(--text-sub); text-align: center; }
+
+/* ===== ミニゲーム ===== */
+.minigame {
+  padding: 16px 12px 20px;
+  text-align: center;
+  border-top: 3px solid var(--card-border);
+  background: var(--bar-bg);
+}
+.mg-round { margin: 0; font-size: 12px; color: var(--text-sub); }
+.mg-text { margin: 6px 0; font-size: 18px; font-weight: bold; }
+.mg-note { margin: 0; font-size: 12px; color: var(--text-sub); }
+.mg-choices { display: flex; justify-content: center; gap: 12px; }
+.mg-choices .pill-btn { margin: 8px 0 0; }
+
+.mg-ball {
+  position: absolute;
+  left: 50%;
+  top: 8%;
+  height: 14%;
+  transform: translateX(-50%);
+}
+.mg-ball.shuffle { animation: ball-shuffle 0.3s ease-in-out infinite alternate; }
+.mg-ball.fly-left  { animation: ball-fly-left 0.6s ease-out forwards; }
+.mg-ball.fly-right { animation: ball-fly-right 0.6s ease-out forwards; }
+.mg-ball.hidden { display: none; }
+@keyframes ball-shuffle {
+  from { transform: translateX(-250%); }
+  to   { transform: translateX(150%); }
+}
+@keyframes ball-fly-left {
+  to { transform: translate(-400%, -60%) rotate(-360deg); }
+}
+@keyframes ball-fly-right {
+  to { transform: translate(300%, -60%) rotate(360deg); }
+}
+
+/* ===== 一回きりの演出(animationend で削除される) ===== */
+.fx { animation-fill-mode: both; }
+
+/* ハート: 右上から浮上してフェードアウト(2秒) */
+.fx-heart { height: 14%; animation: float-fade 2s ease-out both; }
+/* 食べ物: 口元に表示(2.5秒) */
+.fx-food {
+  left: 50%;
+  top: 56%;
+  height: 16%;
+  transform: translateX(-50%);
+  animation: food-bite 2.5s steps(5) both;
+}
+/* おふろアイコン: 浮上(3秒) */
+.fx-bath { height: 20%; animation: float-fade-center 3s ease-out both; }
+/* くすりアイコン: 浮上(2秒) */
+.fx-float { height: 16%; animation: float-fade-center 2s ease-out both; }
+/* キラキラ(おふろ用・3秒) */
+.fx-sparkle-slow { height: 14%; animation: twinkle 3s ease-in-out both; }
+/* 遊び正解: ランダム位置に出て 1.2 秒でフェード */
+.fx-pop { height: 14%; animation: pop-fade 1.2s ease-out both; }
+
+@keyframes float-fade {
+  0%   { opacity: 0; transform: translateY(0) scale(0.6); }
+  15%  { opacity: 1; transform: translateY(-10%) scale(1); }
+  100% { opacity: 0; transform: translateY(-120%) scale(1); }
+}
+@keyframes float-fade-center {
+  0%   { opacity: 0; transform: translate(-50%, 20%); }
+  20%  { opacity: 1; transform: translate(-50%, 0); }
+  100% { opacity: 0; transform: translate(-50%, -80%); }
+}
+@keyframes food-bite {
+  0%   { opacity: 1; clip-path: inset(0 0 0 0); }
+  100% { opacity: 0.2; clip-path: inset(0 0 0 70%); }
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0; transform: scale(0.5); }
+  30%, 70% { opacity: 1; transform: scale(1); }
+}
+@keyframes pop-fade {
+  0%   { opacity: 0; transform: translate(-50%, 0) scale(0.4); }
+  25%  { opacity: 1; transform: translate(-50%, -20%) scale(1.1); }
+  100% { opacity: 0; transform: translate(-50%, -60%) scale(1); }
+}
+
+/* うんちのフェードアウト(トイレ) */
+.poop.fading { animation: poop-out 0.8s ease-in forwards; }
+@keyframes poop-out {
+  to { opacity: 0; transform: translateY(20%) scale(0.6); }
+}
+
+/* ===== M3: 全画面(タイトル・お別れ) ===== */
+.overlay.screen {
+  padding: 0;
+  background: var(--card-bg);
+}
+.overlay.screen .overlay-panel {
+  height: 100%;
+  border: none;
+  border-radius: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.title-screen, .gone-screen, .name-screen { text-align: center; }
+.app-title {
+  margin: 0 0 8px;
+  font-size: 30px;
+  letter-spacing: 0.08em;
+  color: var(--card-border);
+}
+.title-egg {
+  height: 200px; /* 高さのみ指定 */
+  animation: egg-wobble 1.6s ease-in-out infinite;
+}
+@keyframes egg-wobble {
+  0%, 60%, 100% { transform: rotate(0); }
+  70% { transform: rotate(-6deg); }
+  80% { transform: rotate(6deg); }
+  90% { transform: rotate(-3deg); }
+}
+.title-status { min-height: 1.4em; margin: 8px 0; font-size: 16px; font-weight: bold; }
+.color-pick-label { margin: 4px 0 8px; font-size: 14px; color: var(--text-sub); }
+.color-row { display: flex; justify-content: center; gap: 10px; }
+.color-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 92px;
+  padding: 4px 4px 8px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--text);
+  background: var(--btn-bg);
+  border: 3px solid var(--btn-border);
+  border-radius: 12px;
+  cursor: pointer;
+}
+.color-btn img { height: 64px; } /* 縮小表示・高さのみ指定 */
+.color-btn.selected { border-color: var(--card-border); background: var(--btn-bg-active); }
+.start-btn { margin-top: 18px; font-weight: bold; }
+
+/* 名前入力 */
+.name-pet { height: 120px; }
+.name-input {
+  display: block;
+  width: 80%;
+  margin: 8px auto 0;
+  padding: 10px 12px;
+  font: inherit;
+  font-size: 16px; /* iOS のズーム防止のため 16px 以上 */
+  text-align: center;
+  color: var(--text);
+  background: #fff;
+  border: 2px solid var(--btn-border);
+  border-radius: 10px;
+}
+
+/* お別れ */
+.gone-angel {
+  height: 240px; /* 中央に大きく・高さのみ指定 */
+  animation: angel-float 3s ease-in-out infinite;
+}
+@keyframes angel-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+.gone-name { margin: 4px 0 0; font-size: 18px; font-weight: bold; }
+.gone-age { margin: 2px 0 10px; font-size: 13px; color: var(--text-sub); }
+.gone-body { margin: 0 8px; font-size: 14px; line-height: 1.7; }
+
+/* 進化の星: ランダム位置に 1.5 秒ずつ */
+.fx-evolve { height: 14%; animation: pop-fade 1.5s ease-out both; }
+
+/* ===== M5: せってい ===== */
+.settings-btn {
+  flex: none;
+  padding: 2px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.settings-btn img { height: 30px; } /* 高さのみ指定 */
+.setting-row { flex-wrap: wrap; }
+.setting-choices { display: flex; gap: 6px; margin-left: auto; }
+.setting-btn {
+  min-width: 64px;
+  padding: 6px 10px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--text);
+  background: var(--btn-bg);
+  border: 2px solid var(--btn-border);
+  border-radius: 999px;
+  cursor: pointer;
+}
+.setting-btn.selected {
+  background: var(--btn-bg-active);
+  border-color: var(--card-border);
+  font-weight: bold;
+}
